@@ -1,0 +1,53 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>de.unikoblenz.west.lkastler</groupId>
+	<artifactId>DistributedSail</artifactId>
+	<version>beta1</version>
+	<name>DistributedSail</name>
+	<description>Combining the SAIL API with a middleware to create a distributed database</description>
+	<dependencies>
+		<!-- OpenRDF Sesame -->
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-runtime</artifactId>
+			<version>LATEST</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-repository-sail</artifactId>
+			<version>LATEST</version>
+		</dependency>
+		<!-- junit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>LATEST</version>
+		</dependency>
+		<!-- logging, using log4j -->
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>LATEST</version>
+		</dependency>
+		<!-- SLF4J, Sesame uses it -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>LATEST</version>
+		</dependency>
+		<!-- -->
+		<dependency>
+			<groupId>net.hh</groupId>
+			<artifactId>RequestDispatcher</artifactId>
+			<version>1.4.0</version>
+		</dependency>
+	</dependencies>
+	<repositories>
+		<!-- Metalcon repository -->
+		<repository>
+			<id>metalcon</id>
+			<url>http://develop.metalcon.de:8080/mvn/</url>
+		</repository>
+	</repositories>
+</project>
