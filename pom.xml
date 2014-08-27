@@ -38,10 +38,17 @@
 		<!-- SLF4J, Sesame uses it -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>LATEST</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>LATEST</version>
 		</dependency>
-		<!-- Jeromq and HeinrichHartmann's RequestDispatcher-->
+
+
+		<!-- Jeromq and HeinrichHartmann's RequestDispatcher -->
 		<dependency>
 			<groupId>net.hh</groupId>
 			<artifactId>RequestDispatcher</artifactId>

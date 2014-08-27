@@ -5,6 +5,6 @@ package de.unikoblenz.west.lkastler.distributedsail.middleware.commands;
  * 
  * @author lkastler
  */
-public interface InsertionCommand extends SailCommand {
+public interface SailInsertionRequest extends SailRequest {
 
 }

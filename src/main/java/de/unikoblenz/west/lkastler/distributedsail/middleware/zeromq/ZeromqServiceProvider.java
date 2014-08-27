@@ -27,7 +27,9 @@ public class ZeromqServiceProvider<RequestType extends Request, ResponseType ext
 	 * @see de.unikoblenz.west.lkastler.distributedsail.middleware.MiddlewareServiceProvider#start()
 	 */
 	public void start() {
-		proxy.startWorkers();
+		synchronized(proxy) {
+			proxy.startWorkers();
+		}
 	}
 
 	/*
@@ -35,7 +37,9 @@ public class ZeromqServiceProvider<RequestType extends Request, ResponseType ext
 	 * @see de.unikoblenz.west.lkastler.distributedsail.middleware.MiddlewareServiceProvider#stop()
 	 */
 	public void stop() {
-		proxy.shutdown();
+		synchronized(proxy) {
+			proxy.shutdown();
+		}
 	}
 	
 }
