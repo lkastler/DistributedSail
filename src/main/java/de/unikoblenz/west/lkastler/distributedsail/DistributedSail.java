@@ -2,6 +2,7 @@ package de.unikoblenz.west.lkastler.distributedsail;
 
 import org.openrdf.model.ValueFactory;
 import org.openrdf.sail.NotifyingSailConnection;
+import org.openrdf.sail.Sail;
 import org.openrdf.sail.SailException;
 import org.openrdf.sail.helpers.NotifyingSailBase;
 
@@ -11,23 +12,34 @@ import org.openrdf.sail.helpers.NotifyingSailBase;
  */
 public class DistributedSail extends NotifyingSailBase {
 
+	protected Sail sail;
+	
+	public DistributedSail(Sail sail) {
+		this.sail = sail;
+	}
+	
 	public ValueFactory getValueFactory() {
-		// TODO implement Sail.getValueFactory
-		throw new UnsupportedOperationException("implement Sail.getValueFactory !");
+		return sail.getValueFactory();
 	}
 
 	public boolean isWritable() throws SailException {
-		// TODO implement Sail.isWritable
-		throw new UnsupportedOperationException("implement Sail.isWritable !");
+		return sail.isWritable();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.openrdf.sail.helpers.NotifyingSailBase#getConnectionInternal()
+	 */
 	@Override
 	protected NotifyingSailConnection getConnectionInternal()
 			throws SailException {
-		// TODO implement NotifyingSailBase.getConnectionInternal
-		throw new UnsupportedOperationException("implement NotifyingSailBase.getConnectionInternal !");
+		return new DistributedSailConnection(this);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.openrdf.sail.helpers.SailBase#shutDownInternal()
+	 */
 	@Override
 	protected void shutDownInternal() throws SailException {
 		// TODO implement SailBase.shutDownInternal
@@ -35,3 +47,4 @@ public class DistributedSail extends NotifyingSailBase {
 	}
 
 }
+

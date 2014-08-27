@@ -6,13 +6,13 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Response;
 import net.hh.request_dispatcher.RequestHandler;
 
 /**
- * TODO add Comment
+ * wraps a Handler object to a RequestHandler object.
  * @author lkastler
  * @param <RequestType>
  * @param <ResponseType>
  */
 public class ZeromqHandlerWrapper<RequestType extends Request, ResponseType extends Response>  implements
-		RequestHandler<RequestType, ResponseType>{
+		RequestHandler<RequestType, ResponseType> {
 
 	private Handler<RequestType, ResponseType> handler;
 	

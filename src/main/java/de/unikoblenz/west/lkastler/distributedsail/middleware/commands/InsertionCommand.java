@@ -1,9 +1,10 @@
 package de.unikoblenz.west.lkastler.distributedsail.middleware.commands;
 
 /**
- * general interface for commands sent to a connected DistributedSail.
+ * commands a DistributedSail to store data.
+ * 
  * @author lkastler
  */
-public interface SailCommand {
+public interface InsertionCommand extends SailCommand {
 
 }

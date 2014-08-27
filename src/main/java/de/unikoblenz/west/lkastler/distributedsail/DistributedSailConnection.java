@@ -22,11 +22,11 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.MiddlewareServiceP
  * 
  * @author lkastler
  */
-public class DistriubtedSailConnection extends NotifyingSailConnectionBase {
+public class DistributedSailConnection extends NotifyingSailConnectionBase {
 
 	protected MiddlewareServiceProvider provider;
 	
-	public DistriubtedSailConnection(SailBase sailBase) {
+	public DistributedSailConnection(SailBase sailBase) {
 		super(sailBase);
 		// TODO implement DistributedRepositoryConnection constructor
 	}

@@ -11,8 +11,6 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Response;
  * @author lkastler
  */
 public class ZeromqServiceClient<X extends Request, Y extends Response> implements MiddlewareServiceClient<X, Y> {
-
-	// TODO i was here
 	
 	public void start() {
 		// TODO implement MiddlewareServiceClient.start
