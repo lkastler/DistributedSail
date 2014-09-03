@@ -7,10 +7,10 @@ import org.openrdf.sail.memory.MemoryStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unikoblenz.west.lkastler.distributedsail.middleware.Handler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Request;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailResponse;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.Handler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq.ZeromqServiceProvider;
 
 /**

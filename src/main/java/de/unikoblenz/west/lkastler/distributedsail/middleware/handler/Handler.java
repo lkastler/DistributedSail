@@ -1,4 +1,4 @@
-package de.unikoblenz.west.lkastler.distributedsail.middleware;
+package de.unikoblenz.west.lkastler.distributedsail.middleware.handler;
 
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Request;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Response;

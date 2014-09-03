@@ -1,8 +1,8 @@
 package de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq;
 
-import de.unikoblenz.west.lkastler.distributedsail.middleware.Handler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Request;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Response;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.Handler;
 import net.hh.request_dispatcher.RequestHandler;
 
 /**

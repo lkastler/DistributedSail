@@ -1,9 +1,9 @@
 package de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq;
 
-import de.unikoblenz.west.lkastler.distributedsail.middleware.Handler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.MiddlewareServiceClient;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Request;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Response;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.Handler;
 
 /**
  * implementation of the MiddlewareServiceClient for ZeroMQ.
@@ -23,7 +23,6 @@ public class ZeromqServiceClient<X extends Request, Y extends Response> implemen
 	}
 
 	public void execute(X request, Handler<X, Y> handler) {
-		// TODO implement MiddlewareServiceClient<X,Y>.execute
-		throw new UnsupportedOperationException("implement MiddlewareServiceClient<X,Y>.execute !");
+		// TODO work here
 	}
 }

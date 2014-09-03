@@ -19,12 +19,18 @@ import org.openrdf.repository.UnknownTransactionStateException;
 import org.openrdf.repository.base.RepositoryConnectionBase;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.unikoblenz.west.lkastler.distributedsail.middleware.MiddlewareServiceClient;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.MiddlewareServiceException;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.DefaultResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.RetrievalRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.RetrievalResponse;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SimpleInsertionRequest;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.LoggingHandler;
 
 /**
  * Connection for the Repository API with the middleware.
@@ -33,12 +39,22 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Retrieval
  */
 public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 
-	protected MiddlewareServiceClient<InsertionRequest,InsertionResponse> insertion;
-	protected MiddlewareServiceClient<RetrievalRequest,RetrievalResponse> retrieval;
+	final Logger log = LoggerFactory.getLogger(DistributedRepositoryConnection.class);
 	
-	protected DistributedRepositoryConnection(Repository repository) {
+	protected final MiddlewareServiceClient<InsertionRequest, InsertionResponse> insertion;
+	protected final MiddlewareServiceClient<RetrievalRequest, RetrievalResponse> retrieval;
+	
+	private boolean transactionActive = false;
+	
+	public DistributedRepositoryConnection(Repository repository, MiddlewareServiceFactory factory) throws RepositoryException {
 		super(repository);
-		// TODO implement DistributedRepositoryConnection constructor
+		try {
+			insertion = factory.getMiddlewareServiceClient(InsertionRequest.class, InsertionResponse.class);
+			retrieval = factory.getMiddlewareServiceClient( RetrievalRequest.class, RetrievalResponse.class);
+		} catch (MiddlewareServiceException e) {
+			log.error("could not initialize connection", e);
+			throw new RepositoryException(e); 
+		}
 	}
 
 	public Query prepareQuery(QueryLanguage ql, String query, String baseURI)
@@ -98,23 +114,21 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 
 	public boolean isActive() throws UnknownTransactionStateException,
 			RepositoryException {
-		// TODO implement RepositoryConnection.isActive
-		throw new UnsupportedOperationException("implement RepositoryConnection.isActive !");
+		return transactionActive;
 	}
 
 	public void begin() throws RepositoryException {
-		// TODO implement RepositoryConnection.begin
-		throw new UnsupportedOperationException("implement RepositoryConnection.begin !");
+		transactionActive = true;
 	}
 
 	public void commit() throws RepositoryException {
-		// TODO implement RepositoryConnection.commit
-		throw new UnsupportedOperationException("implement RepositoryConnection.commit !");
+		transactionActive = false;
+		// TODO maybe add moer here
 	}
 
 	public void rollback() throws RepositoryException {
-		// TODO implement RepositoryConnection.rollback
-		throw new UnsupportedOperationException("implement RepositoryConnection.rollback !");
+		transactionActive = false;
+		// TODO maybe add moer here
 	}
 
 	public RepositoryResult<Namespace> getNamespaces()
@@ -147,8 +161,11 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 	@Override
 	protected void addWithoutCommit(Resource subject, URI predicate,
 			Value object, Resource... contexts) throws RepositoryException {
-		// TODO implement RepositoryConnectionBase.addWithoutCommit
-		throw new UnsupportedOperationException("implement RepositoryConnectionBase.addWithoutCommit !");
+		// TODO WORK HERE!!!!!!!
+		InsertionRequest req = new SimpleInsertionRequest(subject, predicate, object);
+		InsertionResponse defaultRes = new DefaultResponse();
+		
+		insertion.execute(req, new LoggingHandler<InsertionRequest, InsertionResponse>(defaultRes));
 	}
 
 	@Override
