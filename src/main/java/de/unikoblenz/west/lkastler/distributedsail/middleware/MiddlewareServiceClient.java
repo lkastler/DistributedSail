@@ -1,8 +1,8 @@
 package de.unikoblenz.west.lkastler.distributedsail.middleware;
 
+import net.hh.request_dispatcher.Callback;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Request;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Response;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.Handler;
 
 /**
  * uses a service via middleware.
@@ -23,6 +23,7 @@ public interface MiddlewareServiceClient<RequestType extends Request, ResponseTy
 	/**
 	 * execute a request via the middleware.
 	 * @param request request to dispatch.
+	 * @param callback handles the asynchronous callback.
 	 */
-	public void execute(RequestType request, Handler<RequestType, ResponseType> handler);
+	public void execute(RequestType request, Callback<ResponseType> callback);
 }

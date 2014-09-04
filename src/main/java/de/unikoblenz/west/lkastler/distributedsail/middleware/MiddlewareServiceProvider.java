@@ -3,7 +3,6 @@ package de.unikoblenz.west.lkastler.distributedsail.middleware;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Request;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Response;
 
-
 /**
  * offeres a service via middleware to others.
  * @author lkastler

@@ -20,8 +20,8 @@ public interface MiddlewareServiceFactory {
 	 * @param response
 	 * @return
 	 */
-	public <R extends Request, S extends Response> MiddlewareServiceClient<R, S> getMiddlewareServiceClient(
-			Class<R> response, Class<S> request) throws MiddlewareServiceException;
+	public <R extends Request, S extends Response>MiddlewareServiceClient<R, S> getMiddlewareServiceClient(
+			Class<R> request, Class<S> response) throws MiddlewareServiceException;
 
 	/**
 	 *  RetrievalRequest.class
@@ -29,6 +29,6 @@ public interface MiddlewareServiceFactory {
 	 * @param response
 	 * @return
 	 */
-	public <R extends Request, S extends Response> MiddlewareServiceProvider<R, S> getMiddlewareServiceProvider(
-			Class<Handler<R,S>> handler) throws MiddlewareServiceException;
+	public <R extends Request, S extends Response> MiddlewareServiceProvider<R,S> getMiddlewareServiceProvider(
+			Handler<R,S> handler) throws MiddlewareServiceException;
 }

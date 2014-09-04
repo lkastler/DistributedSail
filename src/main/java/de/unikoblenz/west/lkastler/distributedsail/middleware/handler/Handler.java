@@ -15,5 +15,5 @@ public interface Handler<RequestType extends Request, ResponseType extends Respo
 	 * @return
 	 * @throws Throwable
 	 */
-	public ResponseType handleRequest(Request request) throws Throwable;
+	public ResponseType handleRequest(RequestType request) throws Throwable;
 }

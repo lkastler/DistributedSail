@@ -7,7 +7,6 @@ import org.openrdf.sail.memory.MemoryStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Request;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.Handler;
@@ -23,7 +22,7 @@ public class DistributedSailTest {
 	
 	public class TestHandler implements Handler<SailRequest, SailResponse> {
 
-		public SailResponse handleRequest(Request request) throws Throwable {
+		public SailResponse handleRequest(SailRequest request) throws Throwable {
 			// TODO implement Handler<SailRequest,SailResponse>.handleRequest
 			throw new UnsupportedOperationException("implement Handler<SailRequest,SailResponse>.handleRequest !");
 		}

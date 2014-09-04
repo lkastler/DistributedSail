@@ -1,5 +1,7 @@
 package de.unikoblenz.west.lkastler.distributedsail;
 
+import net.hh.request_dispatcher.Callback;
+
 import org.openrdf.model.Namespace;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
@@ -24,13 +26,9 @@ import org.slf4j.LoggerFactory;
 
 import de.unikoblenz.west.lkastler.distributedsail.middleware.MiddlewareServiceClient;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.MiddlewareServiceException;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.DefaultResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionResponse;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.RetrievalRequest;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.RetrievalResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SimpleInsertionRequest;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.LoggingHandler;
 
 /**
  * Connection for the Repository API with the middleware.
@@ -42,7 +40,7 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 	final Logger log = LoggerFactory.getLogger(DistributedRepositoryConnection.class);
 	
 	protected final MiddlewareServiceClient<InsertionRequest, InsertionResponse> insertion;
-	protected final MiddlewareServiceClient<RetrievalRequest, RetrievalResponse> retrieval;
+	//protected final MiddlewareServiceClient<RetrievalRequest, RetrievalResponse> retrieval;
 	
 	private boolean transactionActive = false;
 	
@@ -50,7 +48,9 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 		super(repository);
 		try {
 			insertion = factory.getMiddlewareServiceClient(InsertionRequest.class, InsertionResponse.class);
-			retrieval = factory.getMiddlewareServiceClient( RetrievalRequest.class, RetrievalResponse.class);
+			//retrieval = factory.getMiddlewareServiceClient(RetrievalRequest.class, RetrievalResponse.class);
+			
+			insertion.start();
 		} catch (MiddlewareServiceException e) {
 			log.error("could not initialize connection", e);
 			throw new RepositoryException(e); 
@@ -123,12 +123,12 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 
 	public void commit() throws RepositoryException {
 		transactionActive = false;
-		// TODO maybe add moer here
+		// TODO maybe add more here
 	}
 
 	public void rollback() throws RepositoryException {
 		transactionActive = false;
-		// TODO maybe add moer here
+		// TODO maybe add more here
 	}
 
 	public RepositoryResult<Namespace> getNamespaces()
@@ -161,11 +161,19 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 	@Override
 	protected void addWithoutCommit(Resource subject, URI predicate,
 			Value object, Resource... contexts) throws RepositoryException {
-		// TODO WORK HERE!!!!!!!
-		InsertionRequest req = new SimpleInsertionRequest(subject, predicate, object);
-		InsertionResponse defaultRes = new DefaultResponse();
+
+		log.debug("add: " + subject + " " + predicate + " " + object);
 		
-		insertion.execute(req, new LoggingHandler<InsertionRequest, InsertionResponse>(defaultRes));
+		InsertionRequest req = new SimpleInsertionRequest(subject, predicate, object);
+		
+		insertion.execute(req, new Callback<InsertionResponse>(){
+
+			@Override
+			public void onSuccess(InsertionResponse reply) {
+				log.info(reply.toString());
+			}
+			
+		});
 	}
 
 	@Override
@@ -174,4 +182,13 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 		// TODO implement RepositoryConnectionBase.removeWithoutCommit
 		throw new UnsupportedOperationException("implement RepositoryConnectionBase.removeWithoutCommit !");
 	}
+
+	@Override
+	public void close() throws RepositoryException {
+		insertion.stop();
+		
+		super.close();
+	}
+	
+	
 }

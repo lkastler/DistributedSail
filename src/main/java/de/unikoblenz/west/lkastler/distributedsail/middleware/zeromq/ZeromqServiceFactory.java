@@ -2,11 +2,17 @@ package de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq;
 
 import de.unikoblenz.west.lkastler.distributedsail.MiddlewareServiceFactory;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.MiddlewareServiceClient;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.MiddlewareServiceException;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.MiddlewareServiceProvider;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Request;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Response;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.Handler;
 
+/**
+ * implementation of the MiddlewareServiceFactory interface for ZeroMQ
+ * 
+ * @author lkastler
+ */
 public class ZeromqServiceFactory implements MiddlewareServiceFactory {
 
 	public static final String CHANNEL = "ipc://test";
@@ -22,23 +28,23 @@ public class ZeromqServiceFactory implements MiddlewareServiceFactory {
 			instance = new ZeromqServiceFactory();
 		return instance;
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * @see de.unikoblenz.west.lkastler.distributedsail.MiddlewareServiceFactory#getMiddlewareServiceClient(java.lang.Class, java.lang.Class)
+	 */
 	public <R extends Request, S extends Response> MiddlewareServiceClient<R, S> getMiddlewareServiceClient(
-			Class<R> request, Class<S> response) {
+			Class<R> request, Class<S> response)
+			throws MiddlewareServiceException {
 		
-		return new ZeromqServiceClient<R,S>();
+		return new ZeromqServiceClient<R, S>(request, CHANNEL);
 	}
 
-	public <R extends Request, S extends Response> MiddlewareServiceProvider<R, S> getMiddlewareServiceProvider(
-			Class<Handler<R, S>> handler) throws ZeromqServiceException {
-		try {
-			return new ZeromqServiceProvider<R,S>(CHANNEL, handler.newInstance());
-		} catch (InstantiationException e) {
-			throw new ZeromqServiceException(e);
-		} catch (IllegalAccessException e) {
-			throw new ZeromqServiceException(e);
-		}
+	/*
+	 * (non-Javadoc)
+	 * @see de.unikoblenz.west.lkastler.distributedsail.MiddlewareServiceFactory#getMiddlewareServiceProvider(java.lang.Class)
+	 */
+	public <R extends Request, S extends Response>MiddlewareServiceProvider<R, S> getMiddlewareServiceProvider(Handler<R, S> handler) throws MiddlewareServiceException {
+			return new ZeromqServiceProvider<R,S>(CHANNEL, handler);
 	}
-
-
 }
