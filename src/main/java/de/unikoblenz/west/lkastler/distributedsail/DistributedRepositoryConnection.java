@@ -24,11 +24,11 @@ import org.openrdf.rio.RDFHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unikoblenz.west.lkastler.distributedsail.middleware.MiddlewareServiceClient;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.MiddlewareServiceException;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SimpleInsertionRequest;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceClient;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceException;
 
 /**
  * Connection for the Repository API with the middleware.
@@ -185,8 +185,9 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 
 	@Override
 	public void close() throws RepositoryException {
-		insertion.stop();
-		
+		synchronized(insertion) {
+			insertion.stop();
+		}
 		super.close();
 	}
 	

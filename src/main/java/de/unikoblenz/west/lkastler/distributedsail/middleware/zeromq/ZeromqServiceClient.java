@@ -6,9 +6,9 @@ import net.hh.request_dispatcher.Dispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unikoblenz.west.lkastler.distributedsail.middleware.MiddlewareServiceClient;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Request;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Response;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceClient;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Request;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Response;
 
 /**
  * implementation of the MiddlewareServiceClient for ZeroMQ.

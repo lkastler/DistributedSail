@@ -1,8 +1,6 @@
-package de.unikoblenz.west.lkastler.distributedsail.middleware;
+package de.unikoblenz.west.lkastler.distributedsail.middleware.services;
 
 import net.hh.request_dispatcher.Callback;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Request;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Response;
 
 /**
  * uses a service via middleware.

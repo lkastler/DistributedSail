@@ -1,12 +1,14 @@
-package de.unikoblenz.west.lkastler.distributedsail;
+package de.unikoblenz.west.lkastler.distributedsail.test;
 
 import org.apache.log4j.BasicConfigurator;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openrdf.sail.memory.MemoryStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unikoblenz.west.lkastler.distributedsail.DistributedSailConnector;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.Handler;
@@ -31,6 +33,11 @@ public class DistributedSailTest {
 	@Before
 	public void setUp() {
 		BasicConfigurator.configure();
+	}
+	
+	@After
+	public void tearDown() {
+		BasicConfigurator.resetConfiguration();
 	}
 	
 	/**

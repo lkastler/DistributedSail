@@ -3,7 +3,7 @@ package de.unikoblenz.west.lkastler.distributedsail;
 import org.openrdf.sail.Sail;
 import org.openrdf.sail.SailException;
 
-import de.unikoblenz.west.lkastler.distributedsail.middleware.MiddlewareServiceProvider;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceProvider;
 /**
  * connects a SAIL storage with the middleware
  * @author lkastler

@@ -1,4 +1,4 @@
-package de.unikoblenz.west.lkastler.distributedsail.middleware;
+package de.unikoblenz.west.lkastler.distributedsail.middleware.services;
 
 /**
  * triggered if middleware services are not responding, not able to create and so on. 

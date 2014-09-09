@@ -1,6 +1,6 @@
 package de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq;
 
-import de.unikoblenz.west.lkastler.distributedsail.middleware.MiddlewareServiceException;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceException;
 
 /**
  * triggered if something went wrong with ZeroMQ connections.

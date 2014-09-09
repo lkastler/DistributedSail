@@ -1,11 +1,11 @@
 package de.unikoblenz.west.lkastler.distributedsail;
 
-import de.unikoblenz.west.lkastler.distributedsail.middleware.MiddlewareServiceClient;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.MiddlewareServiceException;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.MiddlewareServiceProvider;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Request;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Response;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.Handler;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceClient;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceException;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceProvider;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Request;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Response;
 
 /**
  * creates MiddlewareServices.
@@ -15,7 +15,7 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.Handler;
 public interface MiddlewareServiceFactory {
 
 	/**
-	 * 
+	 * TODO add comment
 	 * @param request
 	 * @param response
 	 * @return
@@ -24,7 +24,7 @@ public interface MiddlewareServiceFactory {
 			Class<R> request, Class<S> response) throws MiddlewareServiceException;
 
 	/**
-	 *  RetrievalRequest.class
+	 * TODO add comment
 	 * @param request
 	 * @param response
 	 * @return
