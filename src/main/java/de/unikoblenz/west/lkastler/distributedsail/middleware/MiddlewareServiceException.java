@@ -1,7 +1,8 @@
 package de.unikoblenz.west.lkastler.distributedsail.middleware;
 
 /**
- * TODO add documentation
+ * triggered if middleware services are not responding, not able to create and so on. 
+ * 
  * @author lkastler
  */
 public class MiddlewareServiceException extends Exception {

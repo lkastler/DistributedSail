@@ -1,4 +1,4 @@
-package de.unikoblenz.west.lkastler.distributedsail.middleware;
+package de.unikoblenz.west.lkastler.distributedsail.middleware.transform;
 
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.RetrievalRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.RetrievalResponse;
@@ -8,7 +8,7 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Retrieval
  * 
  * @author lkastler
  */
-public abstract class RetrieveDispatcher extends Dispatcher<RetrievalRequest, RetrievalResponse> {
+public abstract class RetrieveTransformator extends Transformator<RetrievalRequest, RetrievalResponse> {
 	
 	
 }

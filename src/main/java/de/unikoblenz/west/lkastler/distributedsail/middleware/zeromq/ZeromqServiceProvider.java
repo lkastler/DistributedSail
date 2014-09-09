@@ -15,8 +15,12 @@ public class ZeromqServiceProvider<RequestType extends Request, ResponseType ext
 
 	protected ZmqWorkerProxy proxy;
 
+	/**
+	 * creates a ZeroMQ ServiceProvider with given input channel and request handler.
+	 * @param inputChannel - String representation of the input channel.
+	 * @param handler - handler for incoming messages.
+	 */
 	public ZeromqServiceProvider(final String inputChannel, Handler<RequestType, ResponseType> handler) {
-		
 		proxy = new ZmqWorkerProxy(inputChannel);
 		
 		proxy.add(new ZmqWorker<RequestType, ResponseType>(new ZeromqHandlerWrapper<RequestType, ResponseType>(handler)));

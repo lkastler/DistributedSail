@@ -23,12 +23,16 @@ public class ZeromqServiceClient<X extends Request, Y extends Response> implemen
 	protected String endpoint;
 	protected Class<X> requestClass;
 	
+	/**
+	 * creates a ZeroQM Service Client
+	 * @param requestClass
+	 * @param endpoint
+	 */
 	public ZeromqServiceClient(Class<X> requestClass, String endpoint) {
-		log.debug("created");
-		
 		this.endpoint = endpoint;
 		this.requestClass = requestClass;
 		
+		log.debug("created");
 	}
 	
 	/*
@@ -36,8 +40,9 @@ public class ZeromqServiceClient<X extends Request, Y extends Response> implemen
 	 * @see de.unikoblenz.west.lkastler.distributedsail.middleware.MiddlewareServiceClient#start()
 	 */
 	public void start() {
-		log.debug("start");
 		dispatcher.registerService(requestClass, endpoint);
+		
+		log.debug("started");
 	}
 
 	/*
@@ -45,9 +50,10 @@ public class ZeromqServiceClient<X extends Request, Y extends Response> implemen
 	 * @see de.unikoblenz.west.lkastler.distributedsail.middleware.MiddlewareServiceClient#stop()
 	 */
 	public void stop() {
-		log.debug("stop");
 		dispatcher.gatherResults();
 		dispatcher.shutdown();
+		
+		log.debug("stopped");
 	}
 
 	/*

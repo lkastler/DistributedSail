@@ -18,10 +18,18 @@ public class LoggingHandler<RequestType extends Request, ResponseType extends Re
 	private final Logger log = LoggerFactory.getLogger(LoggingHandler.class);
 	private final ResponseType defaultResponse;
 	
+	/**
+	 * creates a LoggingHandler with given default response.
+	 * @param defaultResponse
+	 */
 	public LoggingHandler(ResponseType defaultResponse) {
 		this.defaultResponse = defaultResponse;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see de.unikoblenz.west.lkastler.distributedsail.middleware.handler.Handler#handleRequest(de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Request)
+	 */
 	public ResponseType handleRequest(RequestType request) throws Throwable {
 		log.debug("received: " + request);
 		

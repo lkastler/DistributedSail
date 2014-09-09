@@ -6,6 +6,7 @@ import org.openrdf.model.Value;
 
 /**
  * implementation of an RDF insertion.
+ * 
  * @author lkastler
  */
 public class SimpleInsertionRequest extends InsertionRequest {
@@ -54,6 +55,10 @@ public class SimpleInsertionRequest extends InsertionRequest {
 		return object;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return "SimpleInsertionRequest [" + subject + " " + predicate + " " + object + "]";

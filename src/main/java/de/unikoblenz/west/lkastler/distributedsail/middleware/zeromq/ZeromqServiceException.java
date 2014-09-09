@@ -3,7 +3,7 @@ package de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.MiddlewareServiceException;
 
 /**
- * TODO add documentation
+ * triggered if something went wrong with ZeroMQ connections.
  * @author lkastler
  */
 public class ZeromqServiceException extends MiddlewareServiceException {
