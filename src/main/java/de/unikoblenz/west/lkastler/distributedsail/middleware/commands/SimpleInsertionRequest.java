@@ -9,7 +9,7 @@ import org.openrdf.model.Value;
  * 
  * @author lkastler
  */
-public class SimpleInsertionRequest extends InsertionRequest {
+public class SimpleInsertionRequest extends InsertionRequest implements SailRequest {
 
 	/** */
 	private static final long serialVersionUID = 1L;

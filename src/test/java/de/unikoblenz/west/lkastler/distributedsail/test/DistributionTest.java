@@ -17,6 +17,7 @@ import de.unikoblenz.west.lkastler.distributedsail.DistributedSailConnector;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.DefaultResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionResponse;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SimpleInsertionRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.Handler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.SailLoggingHandler;
@@ -25,8 +26,8 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.Notif
 import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.NotificationHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.NotificationReceiver;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceProvider;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.InsertionTransformator;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.Transformator;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.InsertionTransformer;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.Transformer;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq.ZeromqFactory;
 
 /**
@@ -46,6 +47,9 @@ public class DistributionTest {
 		BasicConfigurator.configure();
 	}
 
+	/**
+	 * tears down logging, otherwise leads to strange output.
+	 */
 	@After
 	public void tearDown() {
 		BasicConfigurator.resetConfiguration();
@@ -57,26 +61,14 @@ public class DistributionTest {
 	 */
 	@Test
 	public void testDistribution() throws Throwable {
-
 		log.info("testing DP and DSC");
 
-		// creating insertion handler
-		Handler<SimpleInsertionRequest, DefaultResponse> handler = new SailLoggingHandler<SimpleInsertionRequest, DefaultResponse>(
-				new DefaultResponse());
-
-		// creating MSP
-		MiddlewareServiceProvider<SimpleInsertionRequest, DefaultResponse> provider = (MiddlewareServiceProvider<SimpleInsertionRequest, DefaultResponse>) ZeromqFactory
-				.getInstance().getMiddlewareServiceProvider(handler);
-
-		// create DSC
-		DistributedSailConnector sailConnect;
-		sailConnect = new DistributedSailConnector(new MemoryStore(), provider);
+		DistributedSailConnector sailConnect = setUpDistributedSailConnector(SimpleInsertionRequest.class);
 		// ... and start it
 		sailConnect.start();
 
 		// create PR
-		Repository repo = new DistributedRepository(
-				ZeromqFactory.getInstance());
+		Repository repo = setUpDistributedRepository();
 		// ... and start it
 		repo.initialize();
 
@@ -107,6 +99,39 @@ public class DistributionTest {
 	@Test
 	public void testTransformer() throws Throwable {
 		log.info("testing transformation");
+		
+		Transformer<InsertionRequest,InsertionResponse> t = setUpInsertionTransformer();
+		// ... and start it
+		t.start();
+		
+		// ... and stopping it
+		t.stop();
+		
+		log.info("done");
+	}
+	
+	/**
+	 * Testing the whole process with DR, DSC, and IT.
+	 * 
+	 * @throws Throwable
+	 * @see DistributedRepository
+	 * @see DistributedSailConnector
+	 * @see InsertionTransformer 
+	 * 
+	 */
+	@Test
+	public void testFullCycle() throws Throwable {
+		Transformer<InsertionRequest, InsertionResponse> t = setUpInsertionTransformer();
+		// starting
+		t.start();
+		
+		// stopping
+		t.stop();
+	}
+	
+	// TODO add doc
+	private Transformer<InsertionRequest,InsertionResponse> setUpInsertionTransformer() throws Throwable {
+		log.info("testing transformation");
 		// creating insertion handler
 		Handler<InsertionRequest, InsertionResponse> handler = new SailLoggingHandler<InsertionRequest, InsertionResponse>(new DefaultResponse());
 		
@@ -120,7 +145,7 @@ public class DistributionTest {
 		NotificationReceiver<Notification, NotificationHandler<Notification>> nr = ZeromqFactory.getInstance().getNotificationReceiver(nHandler);
 		
 		// create IT
-		Transformator<InsertionRequest, InsertionResponse> t = new InsertionTransformator(msp, nr) {
+		Transformer<InsertionRequest, InsertionResponse> t = new InsertionTransformer(msp, nr) {
 
 			@Override
 			protected void startInternally() {
@@ -133,12 +158,27 @@ public class DistributionTest {
 			}
 			
 		};
-		// ... and start it
-		t.start();
-		
-		// ... and stopping it
-		t.stop();
-		
-		log.info("done");
+
+		return t;
+	}
+	
+	// TODO add doc
+	private DistributedRepository setUpDistributedRepository() throws Throwable {
+		return new DistributedRepository(ZeromqFactory.getInstance());
+	}
+	
+	// TODO add doc
+	private <T extends SailRequest>DistributedSailConnector setUpDistributedSailConnector(Class<T> clazz) throws Throwable {
+		// creating insertion handler
+		Handler<T, DefaultResponse> handler; 
+		handler = new SailLoggingHandler<T, DefaultResponse>(new DefaultResponse());
+
+		// creating MSP
+		MiddlewareServiceProvider<T, DefaultResponse> provider;
+		provider= (MiddlewareServiceProvider<T, DefaultResponse>) ZeromqFactory
+						.getInstance().getMiddlewareServiceProvider(handler);
+
+		// create DSC
+		return new DistributedSailConnector(new MemoryStore(), provider);
 	}
 }
