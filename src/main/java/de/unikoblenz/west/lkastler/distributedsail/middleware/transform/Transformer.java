@@ -11,13 +11,13 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Response;
  * dispatches a message and redirect it according to.
  * @author lkastler
  */
-public abstract class Transformator<R extends Request, T extends Response> {
+public abstract class Transformer<R extends Request, T extends Response> {
 
 	protected final MiddlewareServiceProvider<R,T> clientRequests;
 	
 	protected final NotificationReceiver<Notification, NotificationHandler<Notification>> receiver;
 
-	public Transformator(
+	public Transformer(
 			MiddlewareServiceProvider<R, T> clientRequests,
 			NotificationReceiver<Notification, NotificationHandler<Notification>> receiver) {
 		this.clientRequests = clientRequests;

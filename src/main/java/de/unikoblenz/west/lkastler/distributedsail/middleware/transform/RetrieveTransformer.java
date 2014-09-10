@@ -1,28 +1,24 @@
 package de.unikoblenz.west.lkastler.distributedsail.middleware.transform;
 
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionRequest;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionResponse;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.RetrievalRequest;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.RetrievalResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.Notification;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.NotificationHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.NotificationReceiver;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceProvider;
 
 /**
- * dispatches insertion queries and stores given data to a DistributedSailConnection.
- *
+ * dispatches a retrieval query and orders the correct DistributedSail storages to send results to the DistributedRepository.
+ * 
  * @author lkastler
  */
-public abstract class InsertionTransformator extends Transformator<InsertionRequest, InsertionResponse> {
+public abstract class RetrieveTransformer extends Transformer<RetrievalRequest, RetrievalResponse> {
 
-	/**
-	 * add doc
-	 * @param clientRequests
-	 * @param receiver
-	 */
-	public InsertionTransformator(
-			MiddlewareServiceProvider<InsertionRequest, InsertionResponse> clientRequests,
+	public RetrieveTransformer(
+			MiddlewareServiceProvider<RetrievalRequest, RetrievalResponse> clientRequests,
 			NotificationReceiver<Notification, NotificationHandler<Notification>> receiver) {
 		super(clientRequests, receiver);
 	}
+	
 	
 }
