@@ -21,8 +21,10 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Response;
  */
 public class ZeromqFactory implements MiddlewareServiceFactory, MiddlewareNotificationFactory {
 
-	public static final String CHANNEL = "ipc://test";
-	public static final String CHANNEL_NOTIFICATION = "ipc://notify";
+	//public static final String CHANNEL = "ipc://test";
+	// FIXME inproc doesnt work, ipc does not allow multiple connection
+	public static final String CHANNEL = "inproc://test";
+	public static final String CHANNEL_NOTIFICATION = "inproc://notify";
 	
 	private static ZeromqFactory instance = null;
 	
@@ -44,14 +46,14 @@ public class ZeromqFactory implements MiddlewareServiceFactory, MiddlewareNotifi
 			Class<R> request, Class<S> response)
 			throws MiddlewareServiceException {
 		
-		return new ZeromqServiceClient<R, S>(request, CHANNEL);
+		return new ZeromqServiceClient<R, S>(CHANNEL, request);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see de.unikoblenz.west.lkastler.distributedsail.MiddlewareServiceFactory#getMiddlewareServiceProvider(java.lang.Class)
 	 */
-	public <R extends Request, S extends Response>MiddlewareServiceProvider<R, S> getMiddlewareServiceProvider(Handler<R, S> handler) throws MiddlewareServiceException {
+	public <R extends Request, S extends Response> MiddlewareServiceProvider<R, S> getMiddlewareServiceProvider(Handler<R, S> handler) throws MiddlewareServiceException {
 			return new ZeromqServiceProvider<R,S>(CHANNEL, handler);
 	}
 
@@ -61,7 +63,7 @@ public class ZeromqFactory implements MiddlewareServiceFactory, MiddlewareNotifi
 	 */
 	public <T extends Notification> NotificationSender<T> getNotificationSender(
 			Class<T> notificationType) throws MiddlewareNotificationException {
-		return new ZeromqNotificationSender<T>(notificationType, CHANNEL_NOTIFICATION);
+		return new ZeromqNotificationSender<T>(CHANNEL_NOTIFICATION, notificationType);
 	}
 
 	/*

@@ -25,7 +25,7 @@ public class ZeromqNotificationSender<T extends Notification> implements Notific
 	 * TODO add comment
 	 * @param endPoint
 	 */
-	public ZeromqNotificationSender(Class<T> notificationClass, String endPoint) {
+	public ZeromqNotificationSender(String endPoint, Class<T> notificationClass) {
 		this.endPoint = endPoint;
 		this.notificationClass = notificationClass;
 		

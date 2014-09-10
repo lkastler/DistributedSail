@@ -1,5 +1,8 @@
 package de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.hh.request_dispatcher.ZmqWorker;
 import net.hh.request_dispatcher.ZmqWorkerProxy;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.Handler;
@@ -11,8 +14,10 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Response;
  * implementation of the MiddlewareServiceProvider for ZeroMQ.
  * @author lkastler
  */
-public class ZeromqServiceProvider<RequestType extends Request, ResponseType extends Response> implements MiddlewareServiceProvider<RequestType, ResponseType> {
+public class ZeromqServiceProvider<R extends Request, S extends Response> implements MiddlewareServiceProvider<R, S> {
 
+	private static final Logger log = LoggerFactory.getLogger(ZeromqServiceProvider.class);
+	
 	protected ZmqWorkerProxy proxy;
 
 	/**
@@ -20,10 +25,12 @@ public class ZeromqServiceProvider<RequestType extends Request, ResponseType ext
 	 * @param inputChannel - String representation of the input channel.
 	 * @param handler - handler for incoming messages.
 	 */
-	public ZeromqServiceProvider(final String inputChannel, Handler<RequestType, ResponseType> handler) {
+	public ZeromqServiceProvider(final String inputChannel, Handler<R, S> handler) {
 		proxy = new ZmqWorkerProxy(inputChannel);
 		
-		proxy.add(new ZmqWorker<RequestType, ResponseType>(new ZeromqHandlerWrapper<RequestType, ResponseType>(handler)));
+		proxy.add(new ZmqWorker<R, S>(new ZeromqHandlerWrapper<R, S>(handler)));
+		
+		log.debug("created");
 	}
 	
 	/*
@@ -31,9 +38,12 @@ public class ZeromqServiceProvider<RequestType extends Request, ResponseType ext
 	 * @see de.unikoblenz.west.lkastler.distributedsail.middleware.MiddlewareServiceProvider#start()
 	 */
 	public void start() {
+		log.debug("starting");
 		synchronized(proxy) {
 			proxy.startWorkers();
 		}
+		
+		log.debug("started");
 	}
 
 	/*
@@ -41,9 +51,11 @@ public class ZeromqServiceProvider<RequestType extends Request, ResponseType ext
 	 * @see de.unikoblenz.west.lkastler.distributedsail.middleware.MiddlewareServiceProvider#stop()
 	 */
 	public void stop() {
+		log.debug("stopping");
 		synchronized(proxy) {
 			proxy.shutdown();
 		}
+		
+		log.debug("stopped");
 	}
-	
 }

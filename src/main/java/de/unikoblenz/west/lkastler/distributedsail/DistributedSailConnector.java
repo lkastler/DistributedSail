@@ -3,6 +3,8 @@ package de.unikoblenz.west.lkastler.distributedsail;
 import org.openrdf.sail.Sail;
 import org.openrdf.sail.SailException;
 
+import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.Notification;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.NotificationSender;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceProvider;
 /**
  * connects a SAIL storage with the middleware
@@ -12,6 +14,8 @@ public class DistributedSailConnector {
 	
 	protected Sail sail;
 	protected MiddlewareServiceProvider<?,?> provider;
+	// TODO implement notification system.
+	protected NotificationSender<Notification> notifications;
 	
 	/**
 	 * creates a DistributedSailConnector that connects given Sail implementation to the middleware by given MiddlewareServiceProvider.

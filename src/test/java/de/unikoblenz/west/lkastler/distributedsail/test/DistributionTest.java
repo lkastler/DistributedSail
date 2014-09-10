@@ -17,9 +17,11 @@ import de.unikoblenz.west.lkastler.distributedsail.DistributedSailConnector;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.DefaultResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionResponse;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailInsertionRequestBase;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SimpleInsertionRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.Handler;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.LoggingHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.SailLoggingHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.LoggingNotificationHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.Notification;
@@ -37,8 +39,9 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq.ZeromqFacto
  */
 public class DistributionTest {
 
-	private static final Logger log = LoggerFactory.getLogger(DistributionTest.class);
-	
+	private static final Logger log = LoggerFactory
+			.getLogger(DistributionTest.class);
+
 	/**
 	 * sets logging up.
 	 */
@@ -54,13 +57,15 @@ public class DistributionTest {
 	public void tearDown() {
 		BasicConfigurator.resetConfiguration();
 	}
-	
+
 	/**
-	 * tests connection between DistributedRepository and DistributedSailConnector.
+	 * tests connection between DistributedRepository and
+	 * DistributedSailConnector.
+	 * 
 	 * @throws Throwable
 	 */
 	@Test
-	public void testDistribution() throws Throwable {
+	public void testDRandDSC() throws Throwable {
 		log.info("testing DP and DSC");
 
 		DistributedSailConnector sailConnect = setUpDistributedSailConnector(SimpleInsertionRequest.class);
@@ -84,68 +89,101 @@ public class DistributionTest {
 		URI object = fac.createURI("http://example.com/", "O");
 
 		con.add(subject, predicate, object);
-		
+
 		// shut it down
 		sailConnect.stop();
 		con.close();
 		repo.shutDown();
-		
+
 		log.info("done");
 	}
-	
+
 	/**
 	 * testing Transformer connection.
 	 */
 	@Test
 	public void testTransformer() throws Throwable {
 		log.info("testing transformation");
-		
-		Transformer<InsertionRequest,InsertionResponse> t = setUpInsertionTransformer();
+
+		Transformer<InsertionRequest, InsertionResponse> t = setUpInsertionTransformer();
 		// ... and start it
 		t.start();
-		
+
 		// ... and stopping it
 		t.stop();
-		
+
 		log.info("done");
 	}
-	
+
 	/**
 	 * Testing the whole process with DR, DSC, and IT.
 	 * 
 	 * @throws Throwable
+	 *             - if something went wrong.
+	 * 
 	 * @see DistributedRepository
 	 * @see DistributedSailConnector
-	 * @see InsertionTransformer 
+	 * @see InsertionTransformer
 	 * 
 	 */
 	@Test
 	public void testFullCycle() throws Throwable {
+		// set up
+		DistributedRepository repo = setUpDistributedRepository();
 		Transformer<InsertionRequest, InsertionResponse> t = setUpInsertionTransformer();
+		DistributedSailConnector dsc = setUpDistributedSailConnector(SailInsertionRequestBase.class);
+
 		// starting
 		t.start();
-		
+		dsc.start();
+		repo.initialize();
+
+		/*
+		 * // DRConnection DistributedRepositoryConnection con; con =
+		 * (DistributedRepositoryConnection) repo.getConnection();
+		 * 
+		 * // add data ValueFactory fac = repo.getValueFactory();
+		 * 
+		 * URI subject = fac.createURI("http://example.com/", "S"); URI
+		 * predicate = fac.createURI("http://example.com/", "P"); URI object =
+		 * fac.createURI("http://example.com/", "O");
+		 * 
+		 * con.add(subject, predicate, object);
+		 */
+
 		// stopping
+		dsc.stop();
 		t.stop();
+		repo.shutDown();
 	}
-	
+
+	// ------------------- SUPPORT -------------------
+
 	// TODO add doc
-	private Transformer<InsertionRequest,InsertionResponse> setUpInsertionTransformer() throws Throwable {
-		log.info("testing transformation");
+	private Transformer<InsertionRequest, InsertionResponse> setUpInsertionTransformer()
+			throws Throwable {
+		log.info("set up IT");
+
 		// creating insertion handler
-		Handler<InsertionRequest, InsertionResponse> handler = new SailLoggingHandler<InsertionRequest, InsertionResponse>(new DefaultResponse());
-		
+		Handler<InsertionRequest, InsertionResponse> handler;
+		handler = new LoggingHandler<InsertionRequest, InsertionResponse>(
+				new DefaultResponse());
+
 		// create MSP
-		MiddlewareServiceProvider<InsertionRequest, InsertionResponse> msp = ZeromqFactory.getInstance().getMiddlewareServiceProvider(handler);
+		MiddlewareServiceProvider<InsertionRequest, InsertionResponse> msp;
+		msp = ZeromqFactory.getInstance().getMiddlewareServiceProvider(handler);
 
 		// creating notification handler
-		NotificationHandler<Notification> nHandler = new LoggingNotificationHandler<Notification>();
-		
+		NotificationHandler<Notification> nHandler;
+		nHandler = new LoggingNotificationHandler<Notification>();
+
 		// create NR
-		NotificationReceiver<Notification, NotificationHandler<Notification>> nr = ZeromqFactory.getInstance().getNotificationReceiver(nHandler);
-		
+		NotificationReceiver<Notification, NotificationHandler<Notification>> nr;
+		nr = ZeromqFactory.getInstance().getNotificationReceiver(nHandler);
+
 		// create IT
-		Transformer<InsertionRequest, InsertionResponse> t = new InsertionTransformer(msp, nr) {
+		Transformer<InsertionRequest, InsertionResponse> t;
+		t = new InsertionTransformer(msp, nr) {
 
 			@Override
 			protected void startInternally() {
@@ -156,29 +194,47 @@ public class DistributionTest {
 			protected void stopInternally() {
 				log.debug("stop internally");
 			}
-			
+
 		};
+
+		log.info("done");
 
 		return t;
 	}
-	
+
 	// TODO add doc
-	private DistributedRepository setUpDistributedRepository() throws Throwable {
-		return new DistributedRepository(ZeromqFactory.getInstance());
-	}
-	
-	// TODO add doc
-	private <T extends SailRequest>DistributedSailConnector setUpDistributedSailConnector(Class<T> clazz) throws Throwable {
+	private <T extends SailRequest> DistributedSailConnector setUpDistributedSailConnector(
+			Class<T> clazz) throws Throwable {
+		log.info("set up DSC");
+
 		// creating insertion handler
-		Handler<T, DefaultResponse> handler; 
-		handler = new SailLoggingHandler<T, DefaultResponse>(new DefaultResponse());
+		Handler<T, DefaultResponse> handler;
+		handler = new SailLoggingHandler<T, DefaultResponse>(
+				new DefaultResponse());
 
 		// creating MSP
 		MiddlewareServiceProvider<T, DefaultResponse> provider;
-		provider= (MiddlewareServiceProvider<T, DefaultResponse>) ZeromqFactory
-						.getInstance().getMiddlewareServiceProvider(handler);
+		provider = (MiddlewareServiceProvider<T, DefaultResponse>) ZeromqFactory
+				.getInstance().getMiddlewareServiceProvider(handler);
 
 		// create DSC
-		return new DistributedSailConnector(new MemoryStore(), provider);
+		DistributedSailConnector dsc = new DistributedSailConnector(
+				new MemoryStore(), provider);
+
+		log.info("done");
+
+		return dsc;
+	}
+
+	// TODO add doc
+	private DistributedRepository setUpDistributedRepository() throws Throwable {
+		log.info("set up DR");
+
+		DistributedRepository dr = new DistributedRepository(
+				ZeromqFactory.getInstance());
+
+		log.info("done");
+
+		return dr;
 	}
 }
