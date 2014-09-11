@@ -1,4 +1,4 @@
-package de.unikoblenz.west.lkastler.distributedsail.middleware.notification;
+package de.unikoblenz.west.lkastler.distributedsail.middleware.notifications;
 
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Request;
 

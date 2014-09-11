@@ -1,9 +1,9 @@
 package de.unikoblenz.west.lkastler.distributedsail.middleware.transform;
 
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.Notification;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.NotificationHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.NotificationReceiver;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceProvider;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.Notification;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.NotificationHandler;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.NotificationReceiver;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceProvider;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Request;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Response;
 
@@ -13,12 +13,12 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Response;
  */
 public abstract class Transformer<R extends Request, T extends Response> {
 
-	protected final MiddlewareServiceProvider<R,T> clientRequests;
+	protected final ServiceProvider<R,T> clientRequests;
 	
 	protected final NotificationReceiver<Notification, NotificationHandler<Notification>> receiver;
 
 	public Transformer(
-			MiddlewareServiceProvider<R, T> clientRequests,
+			ServiceProvider<R, T> clientRequests,
 			NotificationReceiver<Notification, NotificationHandler<Notification>> receiver) {
 		this.clientRequests = clientRequests;
 		this.receiver = receiver;

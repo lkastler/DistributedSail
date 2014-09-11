@@ -1,4 +1,4 @@
-package de.unikoblenz.west.lkastler.distributedsail.middleware.handler;
+package de.unikoblenz.west.lkastler.distributedsail.middleware.handlers;
 
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailResponse;
@@ -8,7 +8,7 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailRespo
  * @author lkastler
  */
 public class SailLoggingHandler<R extends SailRequest, S extends SailResponse> extends
-		LoggingHandler<R, S> {
+		LoggingServiceHandler<R, S> {
 
 	/**
 	 * creates logging handler with default Response.

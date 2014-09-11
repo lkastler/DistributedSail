@@ -14,6 +14,8 @@ import org.openrdf.repository.event.RepositoryListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceFactory;
+
 /**
  * implementation of the OpenRDF Repository API.
  * 

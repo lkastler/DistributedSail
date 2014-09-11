@@ -1,4 +1,4 @@
-package de.unikoblenz.west.lkastler.distributedsail.middleware.notification;
+package de.unikoblenz.west.lkastler.distributedsail.middleware.notifications;
 
 /**
  * sends a notification to several NotificationRecievers.

@@ -1,4 +1,4 @@
-package de.unikoblenz.west.lkastler.distributedsail.middleware.handler;
+package de.unikoblenz.west.lkastler.distributedsail.middleware.handlers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,16 +14,16 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Response;
  * @param <RequestType>
  * @param <ResponseType>
  */
-public class LoggingHandler<RequestType extends Request, ResponseType extends Response> implements ServiceHandler<RequestType, ResponseType> {
+public class LoggingServiceHandler<RequestType extends Request, ResponseType extends Response> implements ServiceHandler<RequestType, ResponseType> {
 
-	private final Logger log = LoggerFactory.getLogger(LoggingHandler.class);
+	private final Logger log = LoggerFactory.getLogger(LoggingServiceHandler.class);
 	private final ResponseType defaultResponse;
 	
 	/**
 	 * creates a LoggingHandler with given default response.
 	 * @param defaultResponse
 	 */
-	public LoggingHandler(ResponseType defaultResponse) {
+	public LoggingServiceHandler(ResponseType defaultResponse) {
 		this.defaultResponse = defaultResponse;
 	}
 

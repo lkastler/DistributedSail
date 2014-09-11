@@ -1,4 +1,6 @@
-package de.unikoblenz.west.lkastler.distributedsail.middleware.notification;
+package de.unikoblenz.west.lkastler.distributedsail.middleware.commands;
+
+import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.Notification;
 
 /**
  * Signalizes connected NotificationReceivers that sender has connected.

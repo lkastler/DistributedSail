@@ -8,9 +8,9 @@ import net.hh.request_dispatcher.ZmqWorkerProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.Notification;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.NotificationHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.NotificationReceiver;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.Notification;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.NotificationHandler;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.NotificationReceiver;
 
 /**
  * receives and processes notifications from a NotificationSender.

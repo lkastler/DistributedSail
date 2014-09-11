@@ -6,7 +6,7 @@ import net.hh.request_dispatcher.Dispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceClient;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceClient;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Request;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Response;
 
@@ -19,7 +19,7 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Response;
  * @param <Y> -  type of responses for this client.
  */
 public class ZeromqServiceClient<X extends Request, Y extends Response>
-		implements MiddlewareServiceClient<X, Y> {
+		implements ServiceClient<X, Y> {
 
 	private static final Logger log = LoggerFactory
 			.getLogger(ZeromqServiceClient.class);

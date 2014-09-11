@@ -1,16 +1,16 @@
 package de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq;
 
-import de.unikoblenz.west.lkastler.distributedsail.MiddlewareServiceFactory;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.MiddlewareNotificationException;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.MiddlewareNotificationFactory;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.Notification;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.NotificationHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.NotificationReceiver;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.NotificationSender;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.MiddlewareNotificationException;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.MiddlewareNotificationFactory;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.Notification;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.NotificationHandler;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.NotificationReceiver;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.NotificationSender;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceFactory;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceClient;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceClient;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceException;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceProvider;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceProvider;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Request;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Response;
 
@@ -42,7 +42,7 @@ public class ZeromqFactory implements MiddlewareServiceFactory, MiddlewareNotifi
 	 * (non-Javadoc)
 	 * @see de.unikoblenz.west.lkastler.distributedsail.MiddlewareServiceFactory#getMiddlewareServiceClient(java.lang.Class, java.lang.Class)
 	 */
-	public <R extends Request, S extends Response> MiddlewareServiceClient<R, S> getMiddlewareServiceClient(
+	public <R extends Request, S extends Response> ServiceClient<R, S> createServiceClient(
 			Class<R> request, Class<S> response)
 			throws MiddlewareServiceException {
 		
@@ -53,7 +53,7 @@ public class ZeromqFactory implements MiddlewareServiceFactory, MiddlewareNotifi
 	 * (non-Javadoc)
 	 * @see de.unikoblenz.west.lkastler.distributedsail.MiddlewareServiceFactory#getMiddlewareServiceProvider(java.lang.Class)
 	 */
-	public <R extends Request, S extends Response> MiddlewareServiceProvider<R, S> getMiddlewareServiceProvider(ServiceHandler<R, S> handler) throws MiddlewareServiceException {
+	public <R extends Request, S extends Response> ServiceProvider<R, S> createServiceProvider(ServiceHandler<R, S> handler) throws MiddlewareServiceException {
 			return new ZeromqServiceProvider<R,S>(CHANNEL, handler);
 	}
 
@@ -61,7 +61,7 @@ public class ZeromqFactory implements MiddlewareServiceFactory, MiddlewareNotifi
 	 * (non-Javadoc)
 	 * @see de.unikoblenz.west.lkastler.distributedsail.middleware.notification.MiddlewareNotificationFactory#getNotificationSender(java.lang.Class)
 	 */
-	public <T extends Notification> NotificationSender<T> getNotificationSender(
+	public <T extends Notification> NotificationSender<T> createNotificationSender(
 			Class<T> notificationType) throws MiddlewareNotificationException {
 		return new ZeromqNotificationSender<T>(CHANNEL_NOTIFICATION, notificationType);
 	}
@@ -70,7 +70,7 @@ public class ZeromqFactory implements MiddlewareServiceFactory, MiddlewareNotifi
 	 * (non-Javadoc)
 	 * @see de.unikoblenz.west.lkastler.distributedsail.middleware.notification.MiddlewareNotificationFactory#getNotificationReceiver(de.unikoblenz.west.lkastler.distributedsail.middleware.notification.NotificationHandler)
 	 */
-	public <T extends Notification> NotificationReceiver<T, NotificationHandler<T>> getNotificationReceiver(
+	public <T extends Notification> NotificationReceiver<T, NotificationHandler<T>> createNotificationReceiver(
 			NotificationHandler<T> handler)
 			throws MiddlewareNotificationException {
 		return new ZeromqNotificationReciever<T, NotificationHandler<T>>(CHANNEL_NOTIFICATION, handler);

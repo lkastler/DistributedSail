@@ -6,7 +6,7 @@ import net.hh.request_dispatcher.Callback;
  * uses a service via middleware.
  * @author lkastler
  */
-public interface MiddlewareServiceClient<RequestType extends Request, ResponseType extends Response> {
+public interface ServiceClient<RequestType extends Request, ResponseType extends Response> {
 
 	/**
 	 * connects and starts this MiddlewareServiceClient.

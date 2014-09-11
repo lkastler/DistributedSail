@@ -2,10 +2,10 @@ package de.unikoblenz.west.lkastler.distributedsail.middleware.transform;
 
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionResponse;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.Notification;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.NotificationHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.NotificationReceiver;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceProvider;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.Notification;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.NotificationHandler;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.NotificationReceiver;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceProvider;
 
 /**
  * dispatches insertion queries and stores given data to a DistributedSailConnection.
@@ -20,7 +20,7 @@ public abstract class InsertionTransformer extends Transformer<InsertionRequest,
 	 * @param receiver - NotificationReceiver for DistributedSailConnector discovery.
 	 */
 	public InsertionTransformer(
-			MiddlewareServiceProvider<InsertionRequest, InsertionResponse> clientRequests,
+			ServiceProvider<InsertionRequest, InsertionResponse> clientRequests,
 			NotificationReceiver<Notification, NotificationHandler<Notification>> receiver) {
 		
 		super(clientRequests, receiver);

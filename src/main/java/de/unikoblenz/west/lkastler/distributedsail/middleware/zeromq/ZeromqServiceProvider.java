@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import net.hh.request_dispatcher.ZmqWorker;
 import net.hh.request_dispatcher.ZmqWorkerProxy;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceProvider;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceProvider;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Request;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Response;
 
@@ -14,7 +14,7 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Response;
  * implementation of the MiddlewareServiceProvider for ZeroMQ.
  * @author lkastler
  */
-public class ZeromqServiceProvider<R extends Request, S extends Response> implements MiddlewareServiceProvider<R, S> {
+public class ZeromqServiceProvider<R extends Request, S extends Response> implements ServiceProvider<R, S> {
 
 	private static final Logger log = LoggerFactory.getLogger(ZeromqServiceProvider.class);
 	

@@ -20,14 +20,14 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Insertion
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailInsertionRequestBase;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SimpleInsertionRequest;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.LoggingHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.SailLoggingHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.LoggingNotificationHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.Notification;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.NotificationHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.NotificationReceiver;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.handlers.LoggingServiceHandler;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.handlers.LoggingNotificationHandler;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.handlers.SailLoggingHandler;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.Notification;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.NotificationHandler;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.NotificationReceiver;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceProvider;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceProvider;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.InsertionTransformer;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.Transformer;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq.ZeromqFactory;
@@ -166,12 +166,12 @@ public class DistributionTest {
 
 		// creating insertion handler
 		ServiceHandler<InsertionRequest, InsertionResponse> handler;
-		handler = new LoggingHandler<InsertionRequest, InsertionResponse>(
+		handler = new LoggingServiceHandler<InsertionRequest, InsertionResponse>(
 				new DefaultResponse());
 
 		// create MSP
-		MiddlewareServiceProvider<InsertionRequest, InsertionResponse> msp;
-		msp = ZeromqFactory.getInstance().getMiddlewareServiceProvider(handler);
+		ServiceProvider<InsertionRequest, InsertionResponse> msp;
+		msp = ZeromqFactory.getInstance().createServiceProvider(handler);
 
 		// creating notification handler
 		NotificationHandler<Notification> nHandler;
@@ -179,7 +179,7 @@ public class DistributionTest {
 
 		// create NR
 		NotificationReceiver<Notification, NotificationHandler<Notification>> nr;
-		nr = ZeromqFactory.getInstance().getNotificationReceiver(nHandler);
+		nr = ZeromqFactory.getInstance().createNotificationReceiver(nHandler);
 
 		// create IT
 		Transformer<InsertionRequest, InsertionResponse> t;
@@ -213,9 +213,9 @@ public class DistributionTest {
 				new DefaultResponse());
 
 		// creating MSP
-		MiddlewareServiceProvider<T, DefaultResponse> provider;
-		provider = (MiddlewareServiceProvider<T, DefaultResponse>) ZeromqFactory
-				.getInstance().getMiddlewareServiceProvider(handler);
+		ServiceProvider<T, DefaultResponse> provider;
+		provider = (ServiceProvider<T, DefaultResponse>) ZeromqFactory
+				.getInstance().createServiceProvider(handler);
 
 		// create DSC
 		DistributedSailConnector dsc = new DistributedSailConnector(

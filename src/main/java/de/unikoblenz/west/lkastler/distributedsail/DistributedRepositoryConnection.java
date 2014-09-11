@@ -27,8 +27,9 @@ import org.slf4j.LoggerFactory;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SimpleInsertionRequest;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceClient;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceClient;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceException;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceFactory;
 
 /**
  * Connection for the Repository API with the middleware.
@@ -39,7 +40,7 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 
 	final Logger log = LoggerFactory.getLogger(DistributedRepositoryConnection.class);
 	
-	protected final MiddlewareServiceClient<InsertionRequest, InsertionResponse> insertion;
+	protected final ServiceClient<InsertionRequest, InsertionResponse> insertion;
 	//protected final MiddlewareServiceClient<RetrievalRequest, RetrievalResponse> retrieval;
 	
 	private boolean transactionActive = false;
@@ -47,7 +48,7 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 	public DistributedRepositoryConnection(Repository repository, MiddlewareServiceFactory factory) throws RepositoryException {
 		super(repository);
 		try {
-			insertion = factory.getMiddlewareServiceClient(InsertionRequest.class, InsertionResponse.class);
+			insertion = factory.createServiceClient(InsertionRequest.class, InsertionResponse.class);
 			//retrieval = factory.getMiddlewareServiceClient(RetrievalRequest.class, RetrievalResponse.class);
 			
 			insertion.start();
