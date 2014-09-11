@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import net.hh.request_dispatcher.ZmqWorker;
 import net.hh.request_dispatcher.ZmqWorkerProxy;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.Handler;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceProvider;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Request;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Response;
@@ -25,7 +25,7 @@ public class ZeromqServiceProvider<R extends Request, S extends Response> implem
 	 * @param inputChannel - String representation of the input channel.
 	 * @param handler - handler for incoming messages.
 	 */
-	public ZeromqServiceProvider(final String inputChannel, Handler<R, S> handler) {
+	public ZeromqServiceProvider(final String inputChannel, ServiceHandler<R, S> handler) {
 		proxy = new ZmqWorkerProxy(inputChannel);
 		
 		proxy.add(new ZmqWorker<R, S>(new ZeromqHandlerWrapper<R, S>(handler)));

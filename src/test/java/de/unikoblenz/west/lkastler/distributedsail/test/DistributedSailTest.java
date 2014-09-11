@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import de.unikoblenz.west.lkastler.distributedsail.DistributedSailConnector;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailResponse;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.Handler;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq.ZeromqServiceProvider;
 
 /**
@@ -22,7 +22,7 @@ public class DistributedSailTest {
 
 	private final static Logger log = LoggerFactory.getLogger(DistributedSailTest.class);
 	
-	public class TestHandler implements Handler<SailRequest, SailResponse> {
+	public class TestHandler implements ServiceHandler<SailRequest, SailResponse> {
 
 		public SailResponse handleRequest(SailRequest request) throws Throwable {
 			// TODO implement Handler<SailRequest,SailResponse>.handleRequest

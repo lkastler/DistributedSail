@@ -3,6 +3,7 @@ package de.unikoblenz.west.lkastler.distributedsail.middleware.handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Request;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Response;
 
@@ -13,7 +14,7 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Response;
  * @param <RequestType>
  * @param <ResponseType>
  */
-public class LoggingHandler<RequestType extends Request, ResponseType extends Response> implements Handler<RequestType, ResponseType> {
+public class LoggingHandler<RequestType extends Request, ResponseType extends Response> implements ServiceHandler<RequestType, ResponseType> {
 
 	private final Logger log = LoggerFactory.getLogger(LoggingHandler.class);
 	private final ResponseType defaultResponse;

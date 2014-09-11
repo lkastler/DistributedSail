@@ -20,13 +20,13 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.Insertion
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailInsertionRequestBase;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SimpleInsertionRequest;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.Handler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.LoggingHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.SailLoggingHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.LoggingNotificationHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.Notification;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.NotificationHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.NotificationReceiver;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceProvider;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.InsertionTransformer;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.Transformer;
@@ -165,7 +165,7 @@ public class DistributionTest {
 		log.info("set up IT");
 
 		// creating insertion handler
-		Handler<InsertionRequest, InsertionResponse> handler;
+		ServiceHandler<InsertionRequest, InsertionResponse> handler;
 		handler = new LoggingHandler<InsertionRequest, InsertionResponse>(
 				new DefaultResponse());
 
@@ -208,7 +208,7 @@ public class DistributionTest {
 		log.info("set up DSC");
 
 		// creating insertion handler
-		Handler<T, DefaultResponse> handler;
+		ServiceHandler<T, DefaultResponse> handler;
 		handler = new SailLoggingHandler<T, DefaultResponse>(
 				new DefaultResponse());
 

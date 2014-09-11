@@ -1,13 +1,13 @@
 package de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq;
 
 import de.unikoblenz.west.lkastler.distributedsail.MiddlewareServiceFactory;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.Handler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.MiddlewareNotificationException;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.MiddlewareNotificationFactory;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.Notification;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.NotificationHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.NotificationReceiver;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.notification.NotificationSender;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceClient;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceException;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceProvider;
@@ -53,7 +53,7 @@ public class ZeromqFactory implements MiddlewareServiceFactory, MiddlewareNotifi
 	 * (non-Javadoc)
 	 * @see de.unikoblenz.west.lkastler.distributedsail.MiddlewareServiceFactory#getMiddlewareServiceProvider(java.lang.Class)
 	 */
-	public <R extends Request, S extends Response> MiddlewareServiceProvider<R, S> getMiddlewareServiceProvider(Handler<R, S> handler) throws MiddlewareServiceException {
+	public <R extends Request, S extends Response> MiddlewareServiceProvider<R, S> getMiddlewareServiceProvider(ServiceHandler<R, S> handler) throws MiddlewareServiceException {
 			return new ZeromqServiceProvider<R,S>(CHANNEL, handler);
 	}
 

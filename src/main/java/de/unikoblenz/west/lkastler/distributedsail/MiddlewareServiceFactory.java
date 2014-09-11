@@ -1,6 +1,6 @@
 package de.unikoblenz.west.lkastler.distributedsail;
 
-import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.Handler;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceClient;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceException;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceProvider;
@@ -30,5 +30,5 @@ public interface MiddlewareServiceFactory {
 	 * @return
 	 */
 	public <R extends Request, S extends Response> MiddlewareServiceProvider<R,S> getMiddlewareServiceProvider(
-			Handler<R,S> handler) throws MiddlewareServiceException;
+			ServiceHandler<R,S> handler) throws MiddlewareServiceException;
 }

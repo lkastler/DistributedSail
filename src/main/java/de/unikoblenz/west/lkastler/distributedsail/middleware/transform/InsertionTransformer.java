@@ -15,9 +15,9 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Middlewar
 public abstract class InsertionTransformer extends Transformer<InsertionRequest, InsertionResponse> {
 
 	/**
-	 * TODO add doc
+	 * 
 	 * @param clientRequests
-	 * @param receiver
+	 * @param receiver - NotificationReceiver for DistributedSailConnector discovery.
 	 */
 	public InsertionTransformer(
 			MiddlewareServiceProvider<InsertionRequest, InsertionResponse> clientRequests,

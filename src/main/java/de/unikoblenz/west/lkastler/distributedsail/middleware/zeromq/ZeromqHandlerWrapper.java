@@ -1,6 +1,6 @@
 package de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq;
 
-import de.unikoblenz.west.lkastler.distributedsail.middleware.handler.Handler;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Request;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Response;
 import net.hh.request_dispatcher.RequestHandler;
@@ -20,13 +20,13 @@ public class ZeromqHandlerWrapper<RequestType extends Request, ResponseType exte
 	/** */
 	private static final long serialVersionUID = 1L;
 	
-	private Handler<RequestType, ResponseType> handler;
+	private ServiceHandler<RequestType, ResponseType> handler;
 	
 	/**
 	 * creates this wrapper with the given Handler. 
 	 * @param handler - Handler for handling requests and corresponding responses 
 	 */
-	public ZeromqHandlerWrapper(Handler<RequestType, ResponseType> handler) {
+	public ZeromqHandlerWrapper(ServiceHandler<RequestType, ResponseType> handler) {
 		this.handler = handler;
 	}
 	
