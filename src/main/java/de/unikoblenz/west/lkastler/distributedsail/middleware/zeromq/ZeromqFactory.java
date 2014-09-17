@@ -23,7 +23,7 @@ public class ZeromqFactory implements MiddlewareServiceFactory, MiddlewareNotifi
 
 	//public static final String CHANNEL = "ipc://test";
 	// FIXME inproc doesnt work, ipc does not allow multiple connection
-	public static final String CHANNEL = "inproc://test";
+	public static final String CHANNEL = "ipc://insert";
 	public static final String CHANNEL_NOTIFICATION = "inproc://notify";
 	
 	private static ZeromqFactory instance = null;
@@ -43,18 +43,25 @@ public class ZeromqFactory implements MiddlewareServiceFactory, MiddlewareNotifi
 	 * @see de.unikoblenz.west.lkastler.distributedsail.MiddlewareServiceFactory#getMiddlewareServiceClient(java.lang.Class, java.lang.Class)
 	 */
 	public <R extends Request, S extends Response> ServiceClient<R, S> createServiceClient(
-			Class<R> request, Class<S> response)
+			String endpoint, Class<R> request, Class<S> response)
 			throws MiddlewareServiceException {
-		
-		return new ZeromqServiceClient<R, S>(CHANNEL, request);
+		if(endpoint == null)
+			return new ZeromqServiceClient<R, S>(CHANNEL, request);
+		else
+			return new ZeromqServiceClient<R, S>(endpoint, request);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see de.unikoblenz.west.lkastler.distributedsail.MiddlewareServiceFactory#getMiddlewareServiceProvider(java.lang.Class)
 	 */
-	public <R extends Request, S extends Response> ServiceProvider<R, S> createServiceProvider(ServiceHandler<R, S> handler) throws MiddlewareServiceException {
+	public <R extends Request, S extends Response> ServiceProvider<R, S> createServiceProvider(String endpoint, ServiceHandler<R, S> handler) throws MiddlewareServiceException {
+		if(endpoint == null) {
 			return new ZeromqServiceProvider<R,S>(CHANNEL, handler);
+		}
+		else {
+			return new ZeromqServiceProvider<R,S>(endpoint, handler);
+		}
 	}
 
 	/*

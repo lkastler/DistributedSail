@@ -3,6 +3,7 @@ package de.unikoblenz.west.lkastler.distributedsail.test;
 import org.apache.log4j.BasicConfigurator;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
@@ -14,18 +15,14 @@ import org.slf4j.LoggerFactory;
 import de.unikoblenz.west.lkastler.distributedsail.DistributedRepository;
 import de.unikoblenz.west.lkastler.distributedsail.DistributedRepositoryConnection;
 import de.unikoblenz.west.lkastler.distributedsail.DistributedSailConnector;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.DefaultResponse;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.DefaultSailResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailInsertionRequestBase;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailRequest;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SimpleInsertionRequest;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.handlers.LoggingServiceHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.handlers.LoggingNotificationHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.handlers.SailLoggingHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.Notification;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.NotificationHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.NotificationReceiver;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceProvider;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.InsertionTransformer;
@@ -64,6 +61,7 @@ public class DistributionTest {
 	 * 
 	 * @throws Throwable
 	 */
+	@Ignore
 	@Test
 	public void testDRandDSC() throws Throwable {
 		log.info("testing DP and DSC");
@@ -81,7 +79,8 @@ public class DistributionTest {
 		DistributedRepositoryConnection con = (DistributedRepositoryConnection) repo
 				.getConnection();
 
-		// add data
+		
+		// add datanr)
 		ValueFactory fac = repo.getValueFactory();
 
 		URI subject = fac.createURI("http://example.com/", "S");
@@ -105,7 +104,7 @@ public class DistributionTest {
 	public void testTransformer() throws Throwable {
 		log.info("testing transformation");
 
-		Transformer<InsertionRequest, InsertionResponse> t = setUpInsertionTransformer();
+		Transformer t = setUpInsertionTransformer();
 		// ... and start it
 		t.start();
 
@@ -130,7 +129,7 @@ public class DistributionTest {
 	public void testFullCycle() throws Throwable {
 		// set up
 		DistributedRepository repo = setUpDistributedRepository();
-		Transformer<InsertionRequest, InsertionResponse> t = setUpInsertionTransformer();
+		Transformer t = setUpInsertionTransformer();
 		DistributedSailConnector dsc = setUpDistributedSailConnector(SailInsertionRequestBase.class);
 
 		// starting
@@ -138,18 +137,20 @@ public class DistributionTest {
 		dsc.start();
 		repo.initialize();
 
-		/*
-		 * // DRConnection DistributedRepositoryConnection con; con =
-		 * (DistributedRepositoryConnection) repo.getConnection();
-		 * 
-		 * // add data ValueFactory fac = repo.getValueFactory();
-		 * 
-		 * URI subject = fac.createURI("http://example.com/", "S"); URI
-		 * predicate = fac.createURI("http://example.com/", "P"); URI object =
-		 * fac.createURI("http://example.com/", "O");
-		 * 
-		 * con.add(subject, predicate, object);
-		 */
+		DistributedRepositoryConnection con;
+		con = (DistributedRepositoryConnection) repo.getConnection();
+		
+		ValueFactory fac = repo.getValueFactory();
+
+		URI subject = fac.createURI("http://example.com/", "S");
+		URI predicate = fac.createURI("http://example.com/", "P");
+		URI object = fac.createURI("http://example.com/", "O");
+
+		log.info("send insertion");
+		
+		con.add(subject, predicate, object);
+		con.add(subject, predicate, object);
+		con.add(subject, predicate, object);
 
 		// stopping
 		dsc.stop();
@@ -160,43 +161,13 @@ public class DistributionTest {
 	// ------------------- SUPPORT -------------------
 
 	// TODO add doc
-	private Transformer<InsertionRequest, InsertionResponse> setUpInsertionTransformer()
+	private Transformer setUpInsertionTransformer()
 			throws Throwable {
 		log.info("set up IT");
 
-		// creating insertion handler
-		ServiceHandler<InsertionRequest, InsertionResponse> handler;
-		handler = new LoggingServiceHandler<InsertionRequest, InsertionResponse>(
-				new DefaultResponse());
-
-		// create MSP
-		ServiceProvider<InsertionRequest, InsertionResponse> msp;
-		msp = ZeromqFactory.getInstance().createServiceProvider(handler);
-
-		// creating notification handler
-		NotificationHandler<Notification> nHandler;
-		nHandler = new LoggingNotificationHandler<Notification>();
-
-		// create NR
-		NotificationReceiver<Notification, NotificationHandler<Notification>> nr;
-		nr = ZeromqFactory.getInstance().createNotificationReceiver(nHandler);
-
 		// create IT
-		Transformer<InsertionRequest, InsertionResponse> t;
-		t = new InsertionTransformer(msp, nr) {
-
-			@Override
-			protected void startInternally() {
-				log.debug("start internally");
-			}
-
-			@Override
-			protected void stopInternally() {
-				log.debug("stop internally");
-			}
-
-		};
-
+		Transformer t;
+		t = new InsertionTransformer<InsertionRequest,InsertionResponse,SailRequest,SailResponse>(ZeromqFactory.getInstance());
 		log.info("done");
 
 		return t;
@@ -208,14 +179,14 @@ public class DistributionTest {
 		log.info("set up DSC");
 
 		// creating insertion handler
-		ServiceHandler<T, DefaultResponse> handler;
-		handler = new SailLoggingHandler<T, DefaultResponse>(
-				new DefaultResponse());
+		ServiceHandler<T, DefaultSailResponse> handler;
+		handler = new SailLoggingHandler<T, DefaultSailResponse>(
+				new DefaultSailResponse());
 
 		// creating MSP
-		ServiceProvider<T, DefaultResponse> provider;
-		provider = (ServiceProvider<T, DefaultResponse>) ZeromqFactory
-				.getInstance().createServiceProvider(handler);
+		ServiceProvider<T, DefaultSailResponse> provider;
+		provider = (ServiceProvider<T, DefaultSailResponse>) ZeromqFactory
+				.getInstance().createServiceProvider("ipc://sail-1", handler);
 
 		// create DSC
 		DistributedSailConnector dsc = new DistributedSailConnector(

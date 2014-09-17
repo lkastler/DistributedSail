@@ -7,9 +7,6 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Response;
  * 
  * @author lkastler
  */
-public class RetrievalResponse implements Response {
-
-	/** */
-	private static final long serialVersionUID = 1L;
+public interface RetrievalResponse extends Response {
 
 }

@@ -8,9 +8,25 @@ import org.slf4j.LoggerFactory;
  * 
  * @author lkastler
  */
-abstract public class Configurator {
+public class Configurator {
 
 	protected static final Logger log = LoggerFactory.getLogger(Configurator.class);
+	
+	public static Configurator instance = null;
+	
+	private int count = 0;
+	
+	/**
+	 * singleton class for Configurator.
+	 * @return the instance of this Configurator. 
+	 */
+	public static Configurator getInstance() {
+		if(instance == null) {
+			instance = new Configurator();
+		}
+		
+		return instance;
+	}
 	
 	/**
 	 * main, if needed
@@ -19,5 +35,17 @@ abstract public class Configurator {
 	public static void main(String... args) {
 		log.info("start");
 		log.info("end");
+	}
+	
+	private Configurator() {
+		log.debug("created");
+	}
+	
+	public int getCount() {
+		return count;
+	}
+	
+	public void increaseCount() {
+		count++;
 	}
 }
