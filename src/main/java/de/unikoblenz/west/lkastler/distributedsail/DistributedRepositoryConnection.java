@@ -40,7 +40,7 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 
 	final Logger log = LoggerFactory.getLogger(DistributedRepositoryConnection.class);
 	
-	protected final ServiceClient<InsertionRequest, InsertionResponse> insertion;
+	protected final ServiceClient<SimpleInsertionRequest, InsertionResponse> insertion;
 	//protected final MiddlewareServiceClient<RetrievalRequest, RetrievalResponse> retrieval;
 	
 	private boolean transactionActive = false;
@@ -48,7 +48,7 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 	public DistributedRepositoryConnection(Repository repository, MiddlewareServiceFactory factory) throws RepositoryException {
 		super(repository);
 		try {
-			insertion = factory.createServiceClient("ipc://insert", InsertionRequest.class, InsertionResponse.class);
+			insertion = factory.createServiceClient("ipc://insert", SimpleInsertionRequest.class, InsertionResponse.class);
 			//retrieval = factory.getMiddlewareServiceClient(RetrievalRequest.class, RetrievalResponse.class);
 			
 			insertion.start();
@@ -165,17 +165,19 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 
 		log.debug("add: " + subject + " " + predicate + " " + object);
 		
-		InsertionRequest req = new SimpleInsertionRequest(subject, predicate, object);
+		SimpleInsertionRequest req = new SimpleInsertionRequest(subject, predicate, object);
 		
-		insertion.execute(req, new Callback<InsertionResponse>(){
-
-			@Override
-			public void onSuccess(InsertionResponse reply) {
-				log.info("SUCCESS!");
-				log.info(reply.toString());
-			}
-			
-		});
+		synchronized(insertion) {
+			insertion.execute(req, new Callback<InsertionResponse>(){
+	
+				@Override
+				public void onSuccess(InsertionResponse reply) {
+					log.info("SUCCESS!");
+					log.info(reply.toString());
+				}
+				
+			});
+		}
 	}
 
 	@Override

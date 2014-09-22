@@ -5,9 +5,11 @@
 		</Console>
 	</appenders>
 	<loggers>
+		<!-- 
 		<logger name="Main" level="trace">
 			<appender-ref ref="Console" />
 		</logger>
+		 -->
 		<root level="debug">
 			<appender-ref ref="Console" />
 		</root>

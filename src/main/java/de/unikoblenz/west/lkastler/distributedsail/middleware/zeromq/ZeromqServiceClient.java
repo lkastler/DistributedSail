@@ -76,5 +76,6 @@ public class ZeromqServiceClient<X extends Request, Y extends Response>
 	 */
 	public void execute(X request, Callback<Y> handler) {
 		dispatcher.execute(request, handler);
+		dispatcher.gatherResults();
 	}
 }

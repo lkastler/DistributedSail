@@ -2,15 +2,19 @@ package de.unikoblenz.west.lkastler.distributedsail.middleware.transform;
 
 import net.hh.request_dispatcher.Callback;
 
+import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.DefaultResponse;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.DefaultSailResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailInsertionRequest;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailInsertionRequestBase;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailResponse;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SimpleInsertionRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.handlers.LoggingNotificationHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.handlers.LoggingServiceHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.MiddlewareNotificationException;
@@ -32,34 +36,46 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq.ZeromqFacto
  *
  * @author lkastler
  */
-public class InsertionTransformer<R1 extends Request, S1 extends Response, R2 extends SailRequest, S2 extends SailResponse> implements Transformer {
+public class InsertionTransformer implements Transformer {
 
-	protected final static Logger log = LoggerFactory.getLogger(InsertionTransformer.class); 
+	protected final Logger log = LoggerFactory.getLogger(InsertionTransformer.class); 
 
 	private MiddlewareServiceFactory services;
 	
-	protected ServiceProvider<R1,S1> clientConnection;
-	protected ServiceClient<R2, S2> storeConnection;
+	protected ServiceProvider<SimpleInsertionRequest,DefaultResponse> clientConnection;
+	protected ServiceClient<SailInsertionRequestBase,DefaultSailResponse> storeConnection;
 	
 	public InsertionTransformer(MiddlewareServiceFactory services) {
 		this.services = services;
+		
+		log.info("created");
 	}
 
 	public void start() throws TransformerException {
 		try {
-			clientConnection = services.createServiceProvider("ipc://insert", new ServiceHandler<R1,S1>() {
-	
-				public S1 handleRequest(R1 request) throws Throwable {
-					log.debug("fooo: " + request);
-					return (S1) new DefaultResponse();
+			clientConnection = services.createServiceProvider("ipc://insert", new ServiceHandler<SimpleInsertionRequest,DefaultResponse>() {
+
+				public DefaultResponse handleRequest(SimpleInsertionRequest request)
+						throws Throwable {
+					//BasicConfigurator.configure();
+					log.debug("got request: " + request);
+//					System.out.println("got request: " + request);
+					
+					storeConnection.execute(new SailInsertionRequestBase(), new Callback<DefaultSailResponse>() {
+
+						@Override
+						public void onSuccess(DefaultSailResponse reply) {
+							log.debug("WOHO!!!!!");
+//							System.out.println("WEO");
+						}
+						
+					});
+					
+					return new DefaultResponse();
 				}
-				
 			});
 		
-			Class<R2> r = (Class<R2>) SailInsertionRequest.class;
-			Class<S2> s = (Class<S2>) DefaultResponse.class;
-			
-			storeConnection = ZeromqFactory.getInstance().createServiceClient("ipc://sail-1", r, s);
+			storeConnection = ZeromqFactory.getInstance().createServiceClient("ipc://sail1", SailInsertionRequestBase.class, DefaultSailResponse.class);
 		} catch (MiddlewareServiceException e) {
 			e.printStackTrace();
 			throw new TransformerException(e);
@@ -68,7 +84,7 @@ public class InsertionTransformer<R1 extends Request, S1 extends Response, R2 ex
 		log.debug("created");
 		
 		clientConnection.start();
-		storeConnection.stop();
+		storeConnection.start();
 	}	
 
 	public void stop() {
