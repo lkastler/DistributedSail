@@ -24,7 +24,6 @@ import org.openrdf.rio.RDFHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SimpleInsertionRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceClient;

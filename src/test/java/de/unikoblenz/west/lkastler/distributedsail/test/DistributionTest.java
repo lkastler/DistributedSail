@@ -16,11 +16,8 @@ import de.unikoblenz.west.lkastler.distributedsail.DistributedRepository;
 import de.unikoblenz.west.lkastler.distributedsail.DistributedRepositoryConnection;
 import de.unikoblenz.west.lkastler.distributedsail.DistributedSailConnector;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.DefaultSailResponse;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionRequest;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailInsertionRequestBase;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailRequest;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SimpleInsertionRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.handlers.SailLoggingHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
@@ -193,7 +190,7 @@ public class DistributionTest {
 	private <T extends SailRequest> DistributedSailConnector setUpDistributedSailConnector(
 			Class<T> clazz) throws Throwable {
 		log.info("set up DSC");
-
+		
 		// creating insertion handler
 		ServiceHandler<T, DefaultSailResponse> handler;
 		handler = new SailLoggingHandler<T, DefaultSailResponse>(

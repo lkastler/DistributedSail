@@ -12,8 +12,8 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServicePr
  */
 public class DistributedSailConnector {
 	
-	protected Sail sail;
-	protected ServiceProvider<?,?> provider;
+	protected final Sail sail;
+	protected final ServiceProvider<?,?> provider;
 	// TODO implement notification system.
 	protected NotificationSender<Notification> notifications;
 	

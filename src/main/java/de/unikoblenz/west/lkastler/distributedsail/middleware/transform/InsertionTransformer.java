@@ -2,30 +2,15 @@ package de.unikoblenz.west.lkastler.distributedsail.middleware.transform;
 
 import net.hh.request_dispatcher.Callback;
 
-import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.DefaultResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.DefaultSailResponse;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionRequest;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionResponse;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailInsertionRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailInsertionRequestBase;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailRequest;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SimpleInsertionRequest;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.handlers.LoggingNotificationHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.handlers.LoggingServiceHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.MiddlewareNotificationException;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.MiddlewareNotificationFactory;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.Notification;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.NotificationHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.NotificationReceiver;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceException;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceFactory;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Request;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Response;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceClient;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceProvider;
@@ -61,12 +46,11 @@ public class InsertionTransformer implements Transformer {
 					log.debug("got request: " + request);
 //					System.out.println("got request: " + request);
 					
-					storeConnection.execute(new SailInsertionRequestBase(), new Callback<DefaultSailResponse>() {
+					storeConnection.execute(SailInsertionRequestBase.makeSailInsertionRequest(request), new Callback<DefaultSailResponse>() {
 
 						@Override
 						public void onSuccess(DefaultSailResponse reply) {
 							log.debug("WOHO!!!!!");
-//							System.out.println("WEO");
 						}
 						
 					});
