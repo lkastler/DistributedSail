@@ -1,5 +1,8 @@
 package de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq;
 
+import org.zeromq.ZMQ;
+
+import de.unikoblenz.west.lkastler.distributedsail.Configurator;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.MiddlewareNotificationException;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.MiddlewareNotificationFactory;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.Notification;
@@ -23,11 +26,9 @@ public class ZeromqFactory implements MiddlewareServiceFactory, MiddlewareNotifi
 
 	//public static final String CHANNEL = "ipc://test";
 	// FIXME inproc doesnt work, ipc does not allow multiple connection
-	public static final String CHANNEL = "ipc://insert";
-	public static final String CHANNEL_NOTIFICATION = "inproc://notify";
 	
 	private static ZeromqFactory instance = null;
-	
+	private ZMQ.Context context = ZMQ.context(0);
 	/**
 	 * returns the instance of ZeromqServiceFactory.
 	 * @return the instance of ZeromqServiceFactory.
@@ -46,7 +47,7 @@ public class ZeromqFactory implements MiddlewareServiceFactory, MiddlewareNotifi
 			String endpoint, Class<R> request, Class<S> response)
 			throws MiddlewareServiceException {
 		if(endpoint == null)
-			return new ZeromqServiceClient<R, S>(CHANNEL, request);
+			return new ZeromqServiceClient<R, S>(Configurator.CHANNEL_INSERTION, request);
 		else
 			return new ZeromqServiceClient<R, S>(endpoint, request);
 	}
@@ -57,7 +58,7 @@ public class ZeromqFactory implements MiddlewareServiceFactory, MiddlewareNotifi
 	 */
 	public <R extends Request, S extends Response> ServiceProvider<R, S> createServiceProvider(String endpoint, ServiceHandler<R, S> handler) throws MiddlewareServiceException {
 		if(endpoint == null) {
-			return new ZeromqServiceProvider<R,S>(CHANNEL, handler);
+			return new ZeromqServiceProvider<R,S>(Configurator.CHANNEL_INSERTION, handler);
 		}
 		else {
 			return new ZeromqServiceProvider<R,S>(endpoint, handler);
@@ -70,7 +71,7 @@ public class ZeromqFactory implements MiddlewareServiceFactory, MiddlewareNotifi
 	 */
 	public <T extends Notification> NotificationSender<T> createNotificationSender(
 			Class<T> notificationType) throws MiddlewareNotificationException {
-		return new ZeromqNotificationSender<T>(CHANNEL_NOTIFICATION, notificationType);
+		return new ZeromqNotificationSender<T>(Configurator.CHANNEL_NOTIFICATION, notificationType);
 	}
 
 	/*
@@ -80,6 +81,13 @@ public class ZeromqFactory implements MiddlewareServiceFactory, MiddlewareNotifi
 	public <T extends Notification> NotificationReceiver<T, NotificationHandler<T>> createNotificationReceiver(
 			NotificationHandler<T> handler)
 			throws MiddlewareNotificationException {
-		return new ZeromqNotificationReciever<T, NotificationHandler<T>>(CHANNEL_NOTIFICATION, handler);
+		return new ZeromqNotificationReciever<T, NotificationHandler<T>>(Configurator.CHANNEL_NOTIFICATION, handler);
+	}
+
+	/**
+	 * @return the context
+	 */
+	public ZMQ.Context getContext() {
+		return context;
 	}
 }

@@ -12,6 +12,7 @@ import org.openrdf.sail.memory.MemoryStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unikoblenz.west.lkastler.distributedsail.Configurator;
 import de.unikoblenz.west.lkastler.distributedsail.DistributedRepository;
 import de.unikoblenz.west.lkastler.distributedsail.DistributedRepositoryConnection;
 import de.unikoblenz.west.lkastler.distributedsail.DistributedSailConnector;
@@ -137,13 +138,15 @@ public class DistributionTest {
 		// set up
 		DistributedRepository repo = setUpDistributedRepository();
 		Transformer t = setUpInsertionTransformer();
+		Transformer t2 = setUpInsertionTransformer();
 		DistributedSailConnector dsc = setUpDistributedSailConnector(SailInsertionRequestBase.class);
 
 		// starting
 		t.start();
+		t2.start();
 		dsc.start();
 		repo.initialize();
-
+		
 		DistributedRepositoryConnection con;
 		con = (DistributedRepositoryConnection) repo.getConnection();
 		
@@ -168,6 +171,7 @@ public class DistributionTest {
 		// stopping
 		dsc.stop();
 		t.stop();
+		t2.stop();
 		repo.shutDown();
 	}
 
@@ -199,7 +203,7 @@ public class DistributionTest {
 		// creating MSP
 		ServiceProvider<T, DefaultSailResponse> provider;
 		provider = (ServiceProvider<T, DefaultSailResponse>) ZeromqFactory
-				.getInstance().createServiceProvider("ipc://sail1", handler);
+				.getInstance().createServiceProvider(Configurator.CHANNEL_SAIL, handler);
 
 		// create DSC
 		DistributedSailConnector dsc = new DistributedSailConnector(

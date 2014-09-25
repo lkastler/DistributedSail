@@ -8,44 +8,11 @@ import org.slf4j.LoggerFactory;
  * 
  * @author lkastler
  */
-public class Configurator {
+abstract public class Configurator {
 
 	protected static final Logger log = LoggerFactory.getLogger(Configurator.class);
 	
-	public static Configurator instance = null;
-	
-	private int count = 0;
-	
-	/**
-	 * singleton class for Configurator.
-	 * @return the instance of this Configurator. 
-	 */
-	public static Configurator getInstance() {
-		if(instance == null) {
-			instance = new Configurator();
-		}
-		
-		return instance;
-	}
-	
-	/**
-	 * main, if needed
-	 * @param args
-	 */
-	public static void main(String... args) {
-		log.info("start");
-		log.info("end");
-	}
-	
-	private Configurator() {
-		log.debug("created");
-	}
-	
-	public int getCount() {
-		return count;
-	}
-	
-	public void increaseCount() {
-		count++;
-	}
+	public static final String CHANNEL_INSERTION = "inproc://insert";
+	public static final String CHANNEL_SAIL = "inproc://sail";
+	public static final String CHANNEL_NOTIFICATION = "ipc://notify";
 }

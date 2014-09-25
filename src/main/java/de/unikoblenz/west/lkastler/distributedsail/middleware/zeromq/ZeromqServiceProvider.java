@@ -19,14 +19,14 @@ public class ZeromqServiceProvider<R extends Request, S extends Response> implem
 	private static final Logger log = LoggerFactory.getLogger(ZeromqServiceProvider.class);
 	
 	protected ZmqWorkerProxy proxy;
-
+	
 	/**
 	 * creates a ZeroMQ ServiceProvider with given input channel and request handler.
 	 * @param inputChannel - String representation of the input channel.
 	 * @param handler - handler for incoming messages.
 	 */
 	public ZeromqServiceProvider(final String inputChannel, ServiceHandler<R, S> handler) {
-		proxy = new ZmqWorkerProxy(inputChannel);
+		proxy = new ZmqWorkerProxy(ZeromqFactory.getInstance().getContext(), inputChannel);
 		
 		proxy.add(new ZmqWorker<R, S>(new ZeromqHandlerWrapper<R, S>(handler)));
 		

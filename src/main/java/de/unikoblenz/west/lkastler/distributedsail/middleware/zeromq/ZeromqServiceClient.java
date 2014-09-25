@@ -24,7 +24,7 @@ public class ZeromqServiceClient<X extends Request, Y extends Response>
 	private static final Logger log = LoggerFactory
 			.getLogger(ZeromqServiceClient.class);
 
-	protected Dispatcher dispatcher = new Dispatcher();
+	protected Dispatcher dispatcher = new Dispatcher(ZeromqFactory.getInstance().getContext());
 	protected String endpoint;
 	protected Class<X> requestClass;
 

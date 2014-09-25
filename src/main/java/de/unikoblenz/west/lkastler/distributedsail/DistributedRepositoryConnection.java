@@ -47,7 +47,7 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 	public DistributedRepositoryConnection(Repository repository, MiddlewareServiceFactory factory) throws RepositoryException {
 		super(repository);
 		try {
-			insertion = factory.createServiceClient("ipc://insert", SimpleInsertionRequest.class, InsertionResponse.class);
+			insertion = factory.createServiceClient(Configurator.CHANNEL_INSERTION, SimpleInsertionRequest.class, InsertionResponse.class);
 			//retrieval = factory.getMiddlewareServiceClient(RetrievalRequest.class, RetrievalResponse.class);
 			
 			insertion.start();

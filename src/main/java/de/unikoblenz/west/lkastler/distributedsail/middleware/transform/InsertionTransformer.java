@@ -5,6 +5,7 @@ import net.hh.request_dispatcher.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unikoblenz.west.lkastler.distributedsail.Configurator;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.DefaultResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.DefaultSailResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailInsertionRequestBase;
@@ -38,7 +39,7 @@ public class InsertionTransformer implements Transformer {
 
 	public void start() throws TransformerException {
 		try {
-			clientConnection = services.createServiceProvider("ipc://insert", new ServiceHandler<SimpleInsertionRequest,DefaultResponse>() {
+			clientConnection = services.createServiceProvider(Configurator.CHANNEL_INSERTION, new ServiceHandler<SimpleInsertionRequest,DefaultResponse>() {
 
 				public DefaultResponse handleRequest(SimpleInsertionRequest request)
 						throws Throwable {
@@ -59,7 +60,7 @@ public class InsertionTransformer implements Transformer {
 				}
 			});
 		
-			storeConnection = ZeromqFactory.getInstance().createServiceClient("ipc://sail1", SailInsertionRequestBase.class, DefaultSailResponse.class);
+			storeConnection = ZeromqFactory.getInstance().createServiceClient(Configurator.CHANNEL_SAIL, SailInsertionRequestBase.class, DefaultSailResponse.class);
 		} catch (MiddlewareServiceException e) {
 			e.printStackTrace();
 			throw new TransformerException(e);
