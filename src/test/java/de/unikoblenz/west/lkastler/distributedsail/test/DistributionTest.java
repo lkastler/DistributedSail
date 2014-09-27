@@ -12,17 +12,9 @@ import org.openrdf.sail.memory.MemoryStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unikoblenz.west.lkastler.distributedsail.Configurator;
 import de.unikoblenz.west.lkastler.distributedsail.DistributedRepository;
 import de.unikoblenz.west.lkastler.distributedsail.DistributedRepositoryConnection;
 import de.unikoblenz.west.lkastler.distributedsail.DistributedSailConnector;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.DefaultSailResponse;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailInsertionRequestBase;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailRequest;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SimpleInsertionRequest;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.handlers.SailLoggingHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceProvider;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.InsertionTransformer;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.Transformer;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq.ZeromqFactory;
@@ -66,7 +58,7 @@ public class DistributionTest {
 		
 		Object o = new Object();
 
-		DistributedSailConnector sailConnect = setUpDistributedSailConnector(SimpleInsertionRequest.class);
+		DistributedSailConnector sailConnect = setUpDistributedSailConnector();
 		// ... and start it
 		sailConnect.start();
 
@@ -132,14 +124,12 @@ public class DistributionTest {
 	 */
 	@Test
 	public void testFullCycle() throws Throwable {
-		// lock
-		Object o = new Object();
 		
 		// set up
 		DistributedRepository repo = setUpDistributedRepository();
 		Transformer t = setUpInsertionTransformer();
 		Transformer t2 = setUpInsertionTransformer();
-		DistributedSailConnector dsc = setUpDistributedSailConnector(SailInsertionRequestBase.class);
+		DistributedSailConnector dsc = setUpDistributedSailConnector();
 
 		// starting
 		t.start();
@@ -158,14 +148,8 @@ public class DistributionTest {
 
 		log.info("send insertion");
 		
-		con.add(subject, predicate, object);
-		
-		con.add(subject, predicate, object);
-		
-		con.add(subject, predicate, object);
-
-		synchronized(o) {
-			o.wait(10000);
+		for(int i = 0; i < 1000; i++) {
+			con.add(subject, predicate, object);
 		}
 		
 		// stopping
@@ -191,23 +175,12 @@ public class DistributionTest {
 	}
 
 	// TODO add doc
-	private <T extends SailRequest> DistributedSailConnector setUpDistributedSailConnector(
-			Class<T> clazz) throws Throwable {
+	private DistributedSailConnector setUpDistributedSailConnector() throws Throwable {
 		log.info("set up DSC");
 		
-		// creating insertion handler
-		ServiceHandler<T, DefaultSailResponse> handler;
-		handler = new SailLoggingHandler<T, DefaultSailResponse>(
-				new DefaultSailResponse());
-
-		// creating MSP
-		ServiceProvider<T, DefaultSailResponse> provider;
-		provider = (ServiceProvider<T, DefaultSailResponse>) ZeromqFactory
-				.getInstance().createServiceProvider(Configurator.CHANNEL_SAIL, handler);
-
 		// create DSC
 		DistributedSailConnector dsc = new DistributedSailConnector(
-				new MemoryStore(), provider);
+				new MemoryStore(), ZeromqFactory.getInstance(), ZeromqFactory.getInstance());
 
 		log.info("done");
 

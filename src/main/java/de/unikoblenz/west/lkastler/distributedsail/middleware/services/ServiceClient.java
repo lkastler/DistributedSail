@@ -19,7 +19,7 @@ public interface ServiceClient<RequestType extends Request, ResponseType extends
 	public void stop();
 	
 	/**
-	 * execute a request via the middleware.
+	 * execute an asynchronous request via the middleware.
 	 * @param request request to dispatch.
 	 * @param callback handles the asynchronous callback.
 	 */

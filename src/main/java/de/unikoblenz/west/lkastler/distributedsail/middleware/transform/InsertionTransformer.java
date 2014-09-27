@@ -1,6 +1,9 @@
 package de.unikoblenz.west.lkastler.distributedsail.middleware.transform;
 
+import java.util.Random;
+
 import net.hh.request_dispatcher.Callback;
+import net.hh.request_dispatcher.RequestException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,63 +21,103 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServicePr
 import de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq.ZeromqFactory;
 
 /**
- * dispatches insertion queries and stores given data to a DistributedSailConnection.
+ * dispatches insertion queries and stores given data to a
+ * DistributedSailConnection.
  *
  * @author lkastler
  */
-public class InsertionTransformer implements Transformer {
-
-	protected final Logger log = LoggerFactory.getLogger(InsertionTransformer.class); 
+public class InsertionTransformer extends Callback<DefaultSailResponse>
+		implements Transformer, ServiceHandler<SimpleInsertionRequest, DefaultResponse> {
+	
+	protected final Logger log = LoggerFactory
+			.getLogger(InsertionTransformer.class);
 
 	private MiddlewareServiceFactory services;
 	
-	protected ServiceProvider<SimpleInsertionRequest,DefaultResponse> clientConnection;
-	protected ServiceClient<SailInsertionRequestBase,DefaultSailResponse> storeConnection;
+	private static final Random rand = new Random(1);
+	private long id = rand.nextLong();
 	
+	protected ServiceProvider<SimpleInsertionRequest, DefaultResponse> repoConnection;
+	protected ServiceClient<SailInsertionRequestBase, DefaultSailResponse> storeConnection;
+
 	public InsertionTransformer(MiddlewareServiceFactory services) {
 		this.services = services;
-		
-		log.info("created");
+
+		log.info(id + " created");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see de.unikoblenz.west.lkastler.distributedsail.middleware.transform.Transformer#start()
+	 */
 	public void start() throws TransformerException {
 		try {
-			clientConnection = services.createServiceProvider(Configurator.CHANNEL_INSERTION, new ServiceHandler<SimpleInsertionRequest,DefaultResponse>() {
+			repoConnection = services
+					.createServiceProvider(
+							Configurator.CHANNEL_INSERTION,
+							this);
 
-				public DefaultResponse handleRequest(SimpleInsertionRequest request)
-						throws Throwable {
-					//BasicConfigurator.configure();
-					log.debug("got request: " + request);
-//					System.out.println("got request: " + request);
-					
-					storeConnection.execute(SailInsertionRequestBase.makeSailInsertionRequest(request), new Callback<DefaultSailResponse>() {
-
-						@Override
-						public void onSuccess(DefaultSailResponse reply) {
-							log.debug("WOHO!!!!!");
-						}
-						
-					});
-					
-					return new DefaultResponse();
-				}
-			});
-		
-			storeConnection = ZeromqFactory.getInstance().createServiceClient(Configurator.CHANNEL_SAIL, SailInsertionRequestBase.class, DefaultSailResponse.class);
+			storeConnection = ZeromqFactory.getInstance().createServiceClient(
+					Configurator.CHANNEL_SAIL, SailInsertionRequestBase.class,
+					DefaultSailResponse.class);
 		} catch (MiddlewareServiceException e) {
 			e.printStackTrace();
 			throw new TransformerException(e);
 		}
-		
-		log.debug("created");
-		
-		clientConnection.start();
-		storeConnection.start();
-	}	
 
-	public void stop() {
-		clientConnection.stop();
-		storeConnection.stop();
-	}
+		repoConnection.start();
+		storeConnection.start();
 		
+		log.debug(id + " started");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see de.unikoblenz.west.lkastler.distributedsail.middleware.transform.Transformer#stop()
+	 */
+	public void stop() {
+		repoConnection.stop();
+		storeConnection.stop();
+
+		log.debug(id + " stopped");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.hh.request_dispatcher.Callback#onSuccess(java.io.Serializable)
+	 */
+	@Override
+	public void onSuccess(DefaultSailResponse reply) {
+		log.debug(id + " received answer from DSC");
+	}
+
+	/* (non-Javadoc)
+	 * @see net.hh.request_dispatcher.Callback#onTimeout()
+	 */
+	@Override
+	public void onTimeout() {
+		log.error("received timeout");
+	}
+
+	/* (non-Javadoc)
+	 * @see net.hh.request_dispatcher.Callback#onError(net.hh.request_dispatcher.RequestException)
+	 */
+	@Override
+	public void onError(RequestException e) {
+		log.error("received error: " + e.getMessage());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler#handleRequest(de.unikoblenz.west.lkastler.distributedsail.middleware.services.Request)
+	 */
+	public DefaultResponse handleRequest(SimpleInsertionRequest request)
+			throws Throwable {
+		log.debug(id + " got request: " + request);
+
+		storeConnection.execute(SailInsertionRequestBase.makeSailInsertionRequest(request), this);
+				
+		return new DefaultResponse();
+	}
+
 }

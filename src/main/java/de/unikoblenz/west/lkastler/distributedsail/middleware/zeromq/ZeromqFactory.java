@@ -46,9 +46,6 @@ public class ZeromqFactory implements MiddlewareServiceFactory, MiddlewareNotifi
 	public <R extends Request, S extends Response> ServiceClient<R, S> createServiceClient(
 			String endpoint, Class<R> request, Class<S> response)
 			throws MiddlewareServiceException {
-		if(endpoint == null)
-			return new ZeromqServiceClient<R, S>(Configurator.CHANNEL_INSERTION, request);
-		else
 			return new ZeromqServiceClient<R, S>(endpoint, request);
 	}
 
@@ -57,12 +54,7 @@ public class ZeromqFactory implements MiddlewareServiceFactory, MiddlewareNotifi
 	 * @see de.unikoblenz.west.lkastler.distributedsail.MiddlewareServiceFactory#getMiddlewareServiceProvider(java.lang.Class)
 	 */
 	public <R extends Request, S extends Response> ServiceProvider<R, S> createServiceProvider(String endpoint, ServiceHandler<R, S> handler) throws MiddlewareServiceException {
-		if(endpoint == null) {
-			return new ZeromqServiceProvider<R,S>(Configurator.CHANNEL_INSERTION, handler);
-		}
-		else {
-			return new ZeromqServiceProvider<R,S>(endpoint, handler);
-		}
+		return new ZeromqServiceProvider<R,S>(endpoint, handler);
 	}
 
 	/*

@@ -117,47 +117,74 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 		return transactionActive;
 	}
 
+	// does something different than interface specification
 	public void begin() throws RepositoryException {
 		transactionActive = true;
 	}
 
+	// does something different than interface specification
 	public void commit() throws RepositoryException {
 		transactionActive = false;
 		// TODO maybe add more here
 	}
 
+	// does something different than interface specification
 	public void rollback() throws RepositoryException {
 		transactionActive = false;
 		// TODO maybe add more here
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.openrdf.repository.RepositoryConnection#getNamespaces()
+	 */
 	public RepositoryResult<Namespace> getNamespaces()
 			throws RepositoryException {
 		// TODO implement RepositoryConnection.getNamespaces
 		throw new UnsupportedOperationException("implement RepositoryConnection.getNamespaces !");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.openrdf.repository.RepositoryConnection#getNamespace(java.lang.String)
+	 */
 	public String getNamespace(String prefix) throws RepositoryException {
 		// TODO implement RepositoryConnection.getNamespace
 		throw new UnsupportedOperationException("implement RepositoryConnection.getNamespace !");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.openrdf.repository.RepositoryConnection#setNamespace(java.lang.String, java.lang.String)
+	 */
 	public void setNamespace(String prefix, String name)
 			throws RepositoryException {
 		// TODO implement RepositoryConnection.setNamespace
 		throw new UnsupportedOperationException("implement RepositoryConnection.setNamespace !");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.openrdf.repository.RepositoryConnection#removeNamespace(java.lang.String)
+	 */
 	public void removeNamespace(String prefix) throws RepositoryException {
 		// TODO implement RepositoryConnection.removeNamespace
 		throw new UnsupportedOperationException("implement RepositoryConnection.removeNamespace !");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.openrdf.repository.RepositoryConnection#clearNamespaces()
+	 */
 	public void clearNamespaces() throws RepositoryException {
 		// TODO implement RepositoryConnection.clearNamespaces
 		throw new UnsupportedOperationException("implement RepositoryConnection.clearNamespaces !");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.openrdf.repository.base.RepositoryConnectionBase#addWithoutCommit(org.openrdf.model.Resource, org.openrdf.model.URI, org.openrdf.model.Value, org.openrdf.model.Resource[])
+	 */
 	@Override
 	protected void addWithoutCommit(Resource subject, URI predicate,
 			Value object, Resource... contexts) throws RepositoryException {

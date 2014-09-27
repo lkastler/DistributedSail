@@ -12,7 +12,7 @@ import de.unikoblenz.west.lkastler.distributedsail.DistributedSailConnector;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq.ZeromqServiceProvider;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq.ZeromqFactory;
 
 /**
  * this test suite is dedicated to test things related to the DistributedSail class.
@@ -47,7 +47,7 @@ public class DistributedSailTest {
 	@Test
 	public void connectDistributedSail() throws Throwable {
 		log.info("starting connection test");
-		DistributedSailConnector dsail = new DistributedSailConnector(new MemoryStore(), new ZeromqServiceProvider<SailRequest, SailResponse>("ipc://foo", new TestHandler()));
+		DistributedSailConnector dsail = new DistributedSailConnector(new MemoryStore(), ZeromqFactory.getInstance(),ZeromqFactory.getInstance());
 		
 		dsail.start();
 				

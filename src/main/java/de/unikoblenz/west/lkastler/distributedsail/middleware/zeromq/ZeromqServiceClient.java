@@ -24,6 +24,8 @@ public class ZeromqServiceClient<X extends Request, Y extends Response>
 	private static final Logger log = LoggerFactory
 			.getLogger(ZeromqServiceClient.class);
 
+	private static final int TIMEOUT = 1000;
+	
 	protected Dispatcher dispatcher = new Dispatcher(ZeromqFactory.getInstance().getContext());
 	protected String endpoint;
 	protected Class<X> requestClass;
@@ -76,6 +78,6 @@ public class ZeromqServiceClient<X extends Request, Y extends Response>
 	 */
 	public void execute(X request, Callback<Y> handler) {
 		dispatcher.execute(request, handler);
-		dispatcher.gatherResults();
+		dispatcher.gatherResults(TIMEOUT);
 	}
 }

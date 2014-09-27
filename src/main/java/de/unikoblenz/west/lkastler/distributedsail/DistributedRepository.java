@@ -37,21 +37,37 @@ public class DistributedRepository extends RepositoryBase implements NotifyingRe
 		this.factory = factory;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see org.openrdf.repository.Repository#setDataDir(java.io.File)
+	 */
 	public void setDataDir(File dataDir) {
 		// TODO implement Repository.setDataDir
 		throw new UnsupportedOperationException("implement Repository.setDataDir !");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.openrdf.repository.Repository#getDataDir()
+	 */
 	public File getDataDir() {
 		// TODO implement Repository.getDataDir
 		throw new UnsupportedOperationException("implement Repository.getDataDir !");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.openrdf.repository.Repository#isWritable()
+	 */
 	public boolean isWritable() throws RepositoryException {
 		// TODO implement Repository.isWritable
 		throw new UnsupportedOperationException("implement Repository.isWritable !");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.openrdf.repository.Repository#getConnection()
+	 */
 	public RepositoryConnection getConnection() throws RepositoryException {
 		if(connection == null) {
 			connection = new DistributedRepositoryConnection(this, factory);
