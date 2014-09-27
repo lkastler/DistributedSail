@@ -1,5 +1,6 @@
 package de.unikoblenz.west.lkastler.distributedsail.middleware.transform;
 
+import java.util.LinkedList;
 import java.util.Random;
 
 import net.hh.request_dispatcher.Callback;
@@ -38,7 +39,7 @@ public class InsertionTransformer extends Callback<DefaultSailResponse>
 	private long id = rand.nextLong();
 	
 	protected ServiceProvider<SimpleInsertionRequest, DefaultResponse> repoConnection;
-	protected ServiceClient<SailInsertionRequestBase, DefaultSailResponse> storeConnection;
+	protected LinkedList<ServiceClient<SailInsertionRequestBase, DefaultSailResponse>> storeConnection;
 
 	public InsertionTransformer(MiddlewareServiceFactory services) {
 		this.services = services;
@@ -57,16 +58,24 @@ public class InsertionTransformer extends Callback<DefaultSailResponse>
 							Configurator.CHANNEL_INSERTION,
 							this);
 
-			storeConnection = ZeromqFactory.getInstance().createServiceClient(
-					Configurator.CHANNEL_SAIL, SailInsertionRequestBase.class,
-					DefaultSailResponse.class);
+			repoConnection.start();
+			
+			storeConnection = new LinkedList<ServiceClient<SailInsertionRequestBase, DefaultSailResponse>>(); 
+			for(int i = 0; i < Configurator.MAX_STORES; i++) {		
+				ServiceClient<SailInsertionRequestBase,DefaultSailResponse> store = ZeromqFactory.getInstance().createServiceClient(
+						Configurator.CHANNEL_SAIL + Integer.toString(i), SailInsertionRequestBase.class,
+						DefaultSailResponse.class);
+				storeConnection.add(store);
+				
+				store.start();
+			}
 		} catch (MiddlewareServiceException e) {
 			e.printStackTrace();
 			throw new TransformerException(e);
 		}
 
-		repoConnection.start();
-		storeConnection.start();
+		
+		
 		
 		log.debug(id + " started");
 	}
@@ -77,8 +86,10 @@ public class InsertionTransformer extends Callback<DefaultSailResponse>
 	 */
 	public void stop() {
 		repoConnection.stop();
-		storeConnection.stop();
-
+		for(ServiceClient<?,?> store: storeConnection) {
+			store.stop();
+		}
+		
 		log.debug(id + " stopped");
 	}
 
@@ -115,7 +126,9 @@ public class InsertionTransformer extends Callback<DefaultSailResponse>
 			throws Throwable {
 		log.debug(id + " got request: " + request);
 
-		storeConnection.execute(SailInsertionRequestBase.makeSailInsertionRequest(request), this);
+		
+		
+		storeConnection.get(rand.nextInt(storeConnection.size())).execute(SailInsertionRequestBase.makeSailInsertionRequest(request), this);
 				
 		return new DefaultResponse();
 	}

@@ -27,6 +27,8 @@ public class DistributedSailConnector implements
 			.getLogger(DistributedSailConnector.class);
 
 	protected final Sail sail;
+	protected SailConnection sailConnect;
+	protected String id;
 
 	protected ServiceProvider<SailInsertionRequestBase, DefaultSailResponse> provider;
 
@@ -46,10 +48,20 @@ public class DistributedSailConnector implements
 	public DistributedSailConnector(Sail sail,
 			MiddlewareServiceFactory services,
 			MiddlewareNotificationFactory notifications) throws SailException {
+		
+		this("", sail, services, notifications);
+	}
+
+	public DistributedSailConnector(String id, Sail sail,
+			MiddlewareServiceFactory services,
+			MiddlewareNotificationFactory notifications) throws SailException {
+		
+		this.id = id;
 		this.sail = sail;
+
 		try {
-			provider = services.createServiceProvider(
-					Configurator.CHANNEL_SAIL, this);
+			provider = services.createServiceProvider(Configurator.CHANNEL_SAIL
+					+ id, this);
 		} catch (MiddlewareServiceException e) {
 			throw new SailException(e);
 		}
@@ -67,11 +79,11 @@ public class DistributedSailConnector implements
 		log.debug("starting");
 
 		sail.initialize();
+		sailConnect = sail.getConnection();
 
 		provider.start();
 
 		log.debug("started");
-
 	}
 
 	/**
@@ -82,24 +94,27 @@ public class DistributedSailConnector implements
 	 *             - thrown if SAIL implementation could not be shut down.
 	 */
 	public void stop() throws SailException {
+		log.debug("stopping");
+
 		provider.stop();
+		sailConnect.close();
 		sail.shutDown();
+
+		log.debug("stopped");
 	}
 
 	public DefaultSailResponse handleRequest(SailInsertionRequestBase request)
 			throws Throwable {
-		log.debug("handle request: " + request);
+		log.debug("[" + id + "] handle request: " + request);
 
-		SailConnection s = sail.getConnection();
-
-		if (s.isActive()) {
-			s.begin();
-			s.addStatement(request.getSubject(), request.getPredicate(),
-					request.getObject(), new Resource[0]);
-			s.commit();
+		if (sailConnect.isActive()) {
+			sailConnect.begin();
+			sailConnect.addStatement(request.getSubject(),
+					request.getPredicate(), request.getObject(),
+					new Resource[0]);
+			sailConnect.commit();
 		}
-		s.close();
-		
+
 		return new DefaultSailResponse();
 	}
 }
