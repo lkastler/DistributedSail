@@ -84,16 +84,24 @@ public class DistributionTest {
 		// add data)
 		ValueFactory fac = repo.getValueFactory();
 
-		URI subject = fac.createURI("http://example.com/", "S");
-		URI predicate = fac.createURI("http://example.com/", "P");
-		URI object = fac.createURI("http://example.com/", "O");
-
 		for (int i = 0; i < 1000; i++) {
+			URI subject = fac.createURI("http://example.com/", "S_" + Integer.toString(i));
+			URI predicate = fac.createURI("http://example.com/", "P_" + Integer.toString(i));
+			URI object = fac.createURI("http://example.com/", "O_" + Integer.toString(i));
+			
 			con.add(subject, predicate, object);
 		}
 
 		// shut it down
 		for (DistributedSailConnector dsc : sails) {
+			
+			log.debug("print stored infos");
+			
+			for(String s : dsc.test()) {
+				log.debug(s);
+			}
+			
+			
 			dsc.stop();
 		}
 

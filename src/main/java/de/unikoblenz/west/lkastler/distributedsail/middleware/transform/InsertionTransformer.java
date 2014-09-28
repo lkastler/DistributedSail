@@ -62,9 +62,11 @@ public class InsertionTransformer extends Callback<DefaultSailResponse>
 			
 			storeConnection = new LinkedList<ServiceClient<SailInsertionRequestBase, DefaultSailResponse>>(); 
 			for(int i = 0; i < Configurator.MAX_STORES; i++) {		
+				
 				ServiceClient<SailInsertionRequestBase,DefaultSailResponse> store = ZeromqFactory.getInstance().createServiceClient(
 						Configurator.CHANNEL_SAIL + Integer.toString(i), SailInsertionRequestBase.class,
 						DefaultSailResponse.class);
+				
 				storeConnection.add(store);
 				
 				store.start();
@@ -126,8 +128,6 @@ public class InsertionTransformer extends Callback<DefaultSailResponse>
 			throws Throwable {
 		log.debug(id + " got request: " + request);
 
-		
-		
 		storeConnection.get(rand.nextInt(storeConnection.size())).execute(SailInsertionRequestBase.makeSailInsertionRequest(request), this);
 				
 		return new DefaultResponse();

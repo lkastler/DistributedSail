@@ -1,6 +1,12 @@
 package de.unikoblenz.west.lkastler.distributedsail;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import info.aduna.iteration.CloseableIteration;
+
 import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
 import org.openrdf.sail.Sail;
 import org.openrdf.sail.SailConnection;
 import org.openrdf.sail.SailException;
@@ -79,6 +85,7 @@ public class DistributedSailConnector implements
 		log.debug("starting");
 
 		sail.initialize();
+
 		sailConnect = sail.getConnection();
 
 		provider.start();
@@ -107,7 +114,7 @@ public class DistributedSailConnector implements
 			throws Throwable {
 		log.debug("[" + id + "] handle request: " + request);
 
-		if (sailConnect.isActive()) {
+		if (!sailConnect.isActive()) {
 			sailConnect.begin();
 			sailConnect.addStatement(request.getSubject(),
 					request.getPredicate(), request.getObject(),
@@ -116,5 +123,22 @@ public class DistributedSailConnector implements
 		}
 
 		return new DefaultSailResponse();
+	}
+	
+	public List<String> test() throws SailException {
+		LinkedList<String> result = new LinkedList<String>();
+		
+		log.debug("getting info from store");
+		
+		CloseableIteration<? extends Statement, SailException> statements = sailConnect.getStatements(null, null, null, false, new Resource[0]);
+		
+		while(statements.hasNext()) {
+			Statement st = statements.next();
+			result.add(st.toString());
+		}
+		
+		statements.close();
+		
+		return result;
 	}
 }
