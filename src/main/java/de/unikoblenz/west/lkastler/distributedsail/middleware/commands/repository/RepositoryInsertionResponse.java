@@ -5,7 +5,7 @@ package de.unikoblenz.west.lkastler.distributedsail.middleware.commands.reposito
  * 
  * @author lkastler
  */
-public class DefaultRepositoryResponse implements InsertionResponse, RetrievalResponse {
+public class RepositoryInsertionResponse implements InsertionResponse, RetrievalResponse {
 
 	/** */
 	private static final long serialVersionUID = 1L;

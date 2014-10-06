@@ -26,6 +26,8 @@ import org.slf4j.LoggerFactory;
 
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository.InsertionResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository.RepositoryInsertionRequest;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository.RepositoryRetrievalRequest;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository.RetrievalResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceClient;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceException;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceFactory;
@@ -40,7 +42,9 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 	final Logger log = LoggerFactory.getLogger(DistributedRepositoryConnection.class);
 	
 	protected final ServiceClient<RepositoryInsertionRequest, InsertionResponse> insertion;
-	//protected final MiddlewareServiceClient<RetrievalRequest, RetrievalResponse> retrieval;
+	protected final ServiceClient<RepositoryRetrievalRequest, RetrievalResponse> retrieval;
+	
+	private RepositoryResult<Statement> result;
 	
 	private boolean transactionActive = false;
 	
@@ -48,15 +52,110 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 		super(repository);
 		try {
 			insertion = factory.createServiceClient(Configurator.CHANNEL_INSERTION, RepositoryInsertionRequest.class, InsertionResponse.class);
-			//retrieval = factory.getMiddlewareServiceClient(RetrievalRequest.class, RetrievalResponse.class);
+			retrieval = factory.createServiceClient(Configurator.CHANNEL_RETRIEVAL, RepositoryRetrievalRequest.class, RetrievalResponse.class);
 			
 			insertion.start();
+			retrieval.start();
 		} catch (MiddlewareServiceException e) {
 			log.error("could not initialize connection", e);
 			throw new RepositoryException(e); 
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.openrdf.repository.RepositoryConnection#getStatements(org.openrdf.model.Resource, org.openrdf.model.URI, org.openrdf.model.Value, boolean, org.openrdf.model.Resource[])
+	 */
+	public RepositoryResult<Statement> getStatements(Resource subj, URI pred,
+			Value obj, boolean includeInferred, Resource... contexts)
+			throws RepositoryException {
+		
+		log.debug("retieve: " + subj + " " + pred + " " + obj);
+		
+		RepositoryRetrievalRequest req = new RepositoryRetrievalRequest(subj, pred, obj);
+		
+		synchronized(retrieval) {
+			result = null;
+					
+			retrieval.execute(req, new Callback<RetrievalResponse>() {
+
+				@Override
+				public void onSuccess(RetrievalResponse reply) {
+					log.info("SUCCESS!");
+					log.info(reply.toString());
+				}
+			});
+			while(result == null) {
+				//FIXME NOT GOOD
+			}
+			
+			return result;			
+			
+		}	
+	}
+
+	// FIXME does something differend than specification
+	public boolean isActive() throws UnknownTransactionStateException,
+			RepositoryException {
+		return transactionActive;
+	}
+
+	// FIXME  does something different than interface specification
+	public void begin() throws RepositoryException {
+		transactionActive = true;
+	}
+
+	//  FIXME does something different than interface specification
+	public void commit() throws RepositoryException {
+		transactionActive = false;
+		// TODO maybe add more here
+	}
+
+	//  FIXME does something different than interface specification
+	public void rollback() throws RepositoryException {
+		transactionActive = false;
+		// TODO maybe add more here
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.openrdf.repository.base.RepositoryConnectionBase#addWithoutCommit(org.openrdf.model.Resource, org.openrdf.model.URI, org.openrdf.model.Value, org.openrdf.model.Resource[])
+	 */
+	@Override
+	protected void addWithoutCommit(Resource subject, URI predicate,
+			Value object, Resource... contexts) throws RepositoryException {
+
+		log.debug("add: " + subject + " " + predicate + " " + object);
+		
+		RepositoryInsertionRequest req = new RepositoryInsertionRequest(subject, predicate, object);
+		
+		synchronized(insertion) {
+			insertion.execute(req, new Callback<InsertionResponse>(){
+	
+				@Override
+				public void onSuccess(InsertionResponse reply) {
+					log.info("SUCCESS!");
+					log.info(reply.toString());
+				}
+				
+			});
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.openrdf.repository.base.RepositoryConnectionBase#close()
+	 */
+	@Override
+	public void close() throws RepositoryException {
+		synchronized(insertion) {
+			insertion.stop();
+		}
+		super.close();
+	}
+	
+	// -------------------- NOT IMPLEMENTED ------------------------
+	
 	public Query prepareQuery(QueryLanguage ql, String query, String baseURI)
 			throws RepositoryException, MalformedQueryException {
 		// TODO implement RepositoryConnection.prepareQuery
@@ -92,47 +191,13 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 		// TODO implement RepositoryConnection.getContextIDs
 		throw new UnsupportedOperationException("implement RepositoryConnection.getContextIDs !");
 	}
-
-	public RepositoryResult<Statement> getStatements(Resource subj, URI pred,
-			Value obj, boolean includeInferred, Resource... contexts)
-			throws RepositoryException {
-		// TODO implement RepositoryConnection.getStatements
-		throw new UnsupportedOperationException("implement RepositoryConnection.getStatements !");
-	}
-
-	public void exportStatements(Resource subj, URI pred, Value obj,
-			boolean includeInferred, RDFHandler handler, Resource... contexts)
-			throws RepositoryException, RDFHandlerException {
-		// TODO implement RepositoryConnection.exportStatements
-		throw new UnsupportedOperationException("implement RepositoryConnection.exportStatements !");
-	}
-
-	public long size(Resource... contexts) throws RepositoryException {
-		// TODO implement RepositoryConnection.size
-		throw new UnsupportedOperationException("implement RepositoryConnection.size !");
-	}
-
-	public boolean isActive() throws UnknownTransactionStateException,
-			RepositoryException {
-		return transactionActive;
-	}
-
-	// does something different than interface specification
-	public void begin() throws RepositoryException {
-		transactionActive = true;
-	}
-
-	// does something different than interface specification
-	public void commit() throws RepositoryException {
-		transactionActive = false;
-		// TODO maybe add more here
-	}
-
-	// does something different than interface specification
-	public void rollback() throws RepositoryException {
-		transactionActive = false;
-		// TODO maybe add more here
-	}
+	
+	@Override
+	protected void removeWithoutCommit(Resource subject, URI predicate,
+			Value object, Resource... contexts) throws RepositoryException {
+		// TODO implement RepositoryConnectionBase.removeWithoutCommit
+		throw new UnsupportedOperationException("implement RepositoryConnectionBase.removeWithoutCommit !");
+	}	
 
 	/*
 	 * (non-Javadoc)
@@ -180,46 +245,16 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 		// TODO implement RepositoryConnection.clearNamespaces
 		throw new UnsupportedOperationException("implement RepositoryConnection.clearNamespaces !");
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.openrdf.repository.base.RepositoryConnectionBase#addWithoutCommit(org.openrdf.model.Resource, org.openrdf.model.URI, org.openrdf.model.Value, org.openrdf.model.Resource[])
-	 */
-	@Override
-	protected void addWithoutCommit(Resource subject, URI predicate,
-			Value object, Resource... contexts) throws RepositoryException {
-
-		log.debug("add: " + subject + " " + predicate + " " + object);
-		
-		RepositoryInsertionRequest req = new RepositoryInsertionRequest(subject, predicate, object);
-		
-		synchronized(insertion) {
-			insertion.execute(req, new Callback<InsertionResponse>(){
 	
-				@Override
-				public void onSuccess(InsertionResponse reply) {
-					log.info("SUCCESS!");
-					log.info(reply.toString());
-				}
-				
-			});
-		}
+	public void exportStatements(Resource subj, URI pred, Value obj,
+			boolean includeInferred, RDFHandler handler, Resource... contexts)
+			throws RepositoryException, RDFHandlerException {
+		// TODO implement RepositoryConnection.exportStatements
+		throw new UnsupportedOperationException("implement RepositoryConnection.exportStatements !");
 	}
 
-	@Override
-	protected void removeWithoutCommit(Resource subject, URI predicate,
-			Value object, Resource... contexts) throws RepositoryException {
-		// TODO implement RepositoryConnectionBase.removeWithoutCommit
-		throw new UnsupportedOperationException("implement RepositoryConnectionBase.removeWithoutCommit !");
+	public long size(Resource... contexts) throws RepositoryException {
+		// TODO implement RepositoryConnection.size
+		throw new UnsupportedOperationException("implement RepositoryConnection.size !");
 	}
-
-	@Override
-	public void close() throws RepositoryException {
-		synchronized(insertion) {
-			insertion.stop();
-		}
-		super.close();
-	}
-	
-	
 }

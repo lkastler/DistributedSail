@@ -9,4 +9,5 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Response;
  */
 public interface SailResponse extends SailCommand, Response {
 
+	public SailRequest getRequest();
 }

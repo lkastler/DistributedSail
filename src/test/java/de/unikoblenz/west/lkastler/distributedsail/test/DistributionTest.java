@@ -7,9 +7,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.Repository;
+import org.openrdf.repository.RepositoryResult;
 import org.openrdf.sail.memory.MemoryStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +21,10 @@ import de.unikoblenz.west.lkastler.distributedsail.Configurator;
 import de.unikoblenz.west.lkastler.distributedsail.DistributedRepository;
 import de.unikoblenz.west.lkastler.distributedsail.DistributedRepositoryConnection;
 import de.unikoblenz.west.lkastler.distributedsail.DistributedSailConnector;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.InsertionTransformer;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.RetrievalTransformer;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.Transformer;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq.ZeromqFactory;
-import de.unikoblenz.west.lkastler.distributedsail.transform.InsertionTransformer;
 
 /**
  * testing simple distribution of
@@ -109,6 +113,82 @@ public class DistributionTest {
 
 		log.info("done");
 	}
+	
+	/**
+	 * test multiple stores
+	 * 
+	 * @throws Throwable
+	 */
+	@Ignore
+	@Test
+	public void testRetrievalWithMultipleStores() throws Throwable {
+		log.info("testing retrieval setting");
+
+		// DSCs
+		LinkedList<DistributedSailConnector> sails = new LinkedList<DistributedSailConnector>();
+
+		for (int i = 0; i < Configurator.MAX_STORES; i++) {
+			DistributedSailConnector dsc = setUpDistributedSailConnector(Integer.toString(i));
+			
+			sails.add(dsc);
+
+			dsc.start();
+		}
+
+		// create InsertionTransformer
+		Transformer t = setUpInsertionTransformer();
+		t.start();
+		
+		// create RetrievalTransformer
+		Transformer r = setUpRetrievalTransformer();
+		r.start();
+
+		// create PR
+		Repository repo = setUpDistributedRepository();
+		// ... and start it
+		repo.initialize();
+
+		// get DRConnection
+		DistributedRepositoryConnection con = (DistributedRepositoryConnection) repo
+				.getConnection();
+
+		// add data
+		ValueFactory fac = repo.getValueFactory();
+
+		for (int i = 0; i < 10; i++) {
+			URI subject = fac.createURI("http://example.com/", "S_" + Integer.toString(i));
+			URI predicate = fac.createURI("http://example.com/", "P_" + Integer.toString(i));
+			URI object = fac.createURI("http://example.com/", "O_" + Integer.toString(i));
+			
+			con.add(subject, predicate, object);
+		}
+
+		// retrieve data
+		RepositoryResult<Statement> result = con.getStatements(fac.createURI("http://example.com/","S_1"), null, null, false, new Resource[0]);
+		
+		log.debug(result.toString());
+		
+		
+		// shut it down
+		for (DistributedSailConnector dsc : sails) {
+			
+			log.debug("print stored infos");
+			
+			log.debug(Integer.toString(dsc.getStoredTriples().size()));
+			
+			
+			dsc.stop();
+		}
+
+		con.close();
+		
+		t.stop();
+		r.stop();
+		
+		repo.shutDown();
+
+		log.info("done");
+	}
 
 	/**
 	 * testing Transformer connection.
@@ -188,6 +268,14 @@ public class DistributionTest {
 		return t;
 	}
 
+	private Transformer setUpRetrievalTransformer() throws Throwable {
+		log.info("set up RT");
+		
+		Transformer t = new RetrievalTransformer(ZeromqFactory.getInstance());
+		
+		return t;
+	}
+	
 	// TODO add doc
 	private DistributedSailConnector setUpDistributedSailConnector()
 			throws Throwable {

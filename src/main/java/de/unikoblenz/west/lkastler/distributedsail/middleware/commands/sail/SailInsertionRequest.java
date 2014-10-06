@@ -19,7 +19,7 @@ public class SailInsertionRequest implements SailRequest {
 	private Value object;
 	
 	
-	public static SailInsertionRequest makeSailInsertionRequest(RepositoryInsertionRequest req) {
+	public static SailInsertionRequest create(RepositoryInsertionRequest req) {
 		return new SailInsertionRequest(req.getSubject(), req.getPredicate(),req.getObject());
 	}
 	

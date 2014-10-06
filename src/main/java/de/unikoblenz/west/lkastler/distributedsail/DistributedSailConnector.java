@@ -1,9 +1,9 @@
 package de.unikoblenz.west.lkastler.distributedsail;
 
+import info.aduna.iteration.CloseableIteration;
+
 import java.util.LinkedList;
 import java.util.List;
-
-import info.aduna.iteration.CloseableIteration;
 
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
@@ -13,12 +13,15 @@ import org.openrdf.sail.SailException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.DefaultSailResponse;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailInsertionResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailInsertionRequest;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailRetrievalRequest;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailRetrievalResponse;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.handlers.SailInsertionHandler;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.handlers.SailRetrievalHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.MiddlewareNotificationFactory;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceException;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceFactory;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceProvider;
 
 /**
@@ -26,18 +29,20 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServicePr
  * 
  * @author lkastler
  */
-public class DistributedSailConnector implements
-		ServiceHandler<SailInsertionRequest, DefaultSailResponse> {
+public class DistributedSailConnector {
 
 	private static final Logger log = LoggerFactory
 			.getLogger(DistributedSailConnector.class);
 
 	protected final Sail sail;
+	protected final MiddlewareServiceFactory services;
+	
 	protected SailConnection sailConnect;
 	protected String id;
-
-	protected ServiceProvider<SailInsertionRequest, DefaultSailResponse> provider;
-
+	
+	protected ServiceProvider<SailInsertionRequest, SailInsertionResponse> insertion;
+	protected ServiceProvider<SailRetrievalRequest, SailRetrievalResponse> retrieval;
+	
 	// TODO implement notification system.
 
 	/**
@@ -46,31 +51,26 @@ public class DistributedSailConnector implements
 	 * 
 	 * @param sail
 	 *            - implementation of the SAIL API to connect to the middleware.
-	 * @param provider
+	 * @param insertion
 	 *            - provides the connection to the middleware.
 	 * @throws SailException
 	 *             - thrown if needed services could not be created
 	 */
 	public DistributedSailConnector(Sail sail,
 			MiddlewareServiceFactory services,
-			MiddlewareNotificationFactory notifications) throws SailException {
+			MiddlewareNotificationFactory notifications) {
 		
 		this("", sail, services, notifications);
 	}
 
 	public DistributedSailConnector(String id, Sail sail,
 			MiddlewareServiceFactory services,
-			MiddlewareNotificationFactory notifications) throws SailException {
+			MiddlewareNotificationFactory notifications) {
 		
 		this.id = id;
 		this.sail = sail;
+		this.services = services;
 
-		try {
-			provider = services.createServiceProvider(Configurator.CHANNEL_SAIL
-					+ id, this);
-		} catch (MiddlewareServiceException e) {
-			throw new SailException(e);
-		}
 		log.debug("created");
 	}
 
@@ -82,13 +82,25 @@ public class DistributedSailConnector implements
 	 *             - thrown if SAIL implementation could not be started.
 	 */
 	public void start() throws SailException {
+		// FIXME avoid multiple starts
+		
 		log.debug("starting");
 
 		sail.initialize();
 
 		sailConnect = sail.getConnection();
+		
+		try {
+			insertion = services.createServiceProvider(Configurator.CHANNEL_SAIL
+					+ id, new SailInsertionHandler(sailConnect));
+			
+			retrieval = services.createServiceProvider(Configurator.CHANNEL_SAIL
+					+ id, new SailRetrievalHandler(sailConnect));
+		} catch (MiddlewareServiceException e) {
+			throw new SailException(e);
+		}
 
-		provider.start();
+		insertion.start();
 
 		log.debug("started");
 	}
@@ -103,28 +115,13 @@ public class DistributedSailConnector implements
 	public void stop() throws SailException {
 		log.debug("stopping");
 
-		provider.stop();
+		insertion.stop();
 		sailConnect.close();
 		sail.shutDown();
 
 		log.debug("stopped");
 	}
 
-	public DefaultSailResponse handleRequest(SailInsertionRequest request)
-			throws Throwable {
-		log.debug("[" + id + "] handle request: " + request);
-
-		if (!sailConnect.isActive()) {
-			sailConnect.begin();
-			sailConnect.addStatement(request.getSubject(),
-					request.getPredicate(), request.getObject(),
-					new Resource[0]);
-			sailConnect.commit();
-		}
-
-		return new DefaultSailResponse();
-	}
-	
 	public List<String> getStoredTriples() throws SailException {
 		LinkedList<String> result = new LinkedList<String>();
 		
