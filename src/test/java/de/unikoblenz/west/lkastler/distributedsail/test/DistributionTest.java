@@ -18,9 +18,9 @@ import de.unikoblenz.west.lkastler.distributedsail.Configurator;
 import de.unikoblenz.west.lkastler.distributedsail.DistributedRepository;
 import de.unikoblenz.west.lkastler.distributedsail.DistributedRepositoryConnection;
 import de.unikoblenz.west.lkastler.distributedsail.DistributedSailConnector;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.InsertionTransformer;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.Transformer;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq.ZeromqFactory;
+import de.unikoblenz.west.lkastler.distributedsail.transform.InsertionTransformer;
 
 /**
  * testing simple distribution of
@@ -97,9 +97,7 @@ public class DistributionTest {
 			
 			log.debug("print stored infos");
 			
-			for(String s : dsc.test()) {
-				log.debug(s);
-			}
+			log.debug(Integer.toString(dsc.getStoredTriples().size()));
 			
 			
 			dsc.stop();

@@ -1,4 +1,4 @@
-package de.unikoblenz.west.lkastler.distributedsail.middleware.transform;
+package de.unikoblenz.west.lkastler.distributedsail.transform;
 
 import java.util.LinkedList;
 import java.util.Random;
@@ -10,15 +10,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unikoblenz.west.lkastler.distributedsail.Configurator;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.DefaultResponse;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.DefaultSailResponse;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailInsertionRequestBase;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SimpleInsertionRequest;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository.DefaultRepositoryResponse;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository.RepositoryInsertionRequest;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.DefaultSailResponse;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailInsertionRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceException;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceFactory;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceClient;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceProvider;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.Transformer;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.TransformerException;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq.ZeromqFactory;
 
 /**
@@ -28,7 +30,7 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq.ZeromqFacto
  * @author lkastler
  */
 public class InsertionTransformer extends Callback<DefaultSailResponse>
-		implements Transformer, ServiceHandler<SimpleInsertionRequest, DefaultResponse> {
+		implements Transformer, ServiceHandler<RepositoryInsertionRequest, DefaultRepositoryResponse> {
 	
 	protected final Logger log = LoggerFactory
 			.getLogger(InsertionTransformer.class);
@@ -38,8 +40,8 @@ public class InsertionTransformer extends Callback<DefaultSailResponse>
 	private static final Random rand = new Random(1);
 	private long id = rand.nextLong();
 	
-	protected ServiceProvider<SimpleInsertionRequest, DefaultResponse> repoConnection;
-	protected LinkedList<ServiceClient<SailInsertionRequestBase, DefaultSailResponse>> storeConnection;
+	protected ServiceProvider<RepositoryInsertionRequest, DefaultRepositoryResponse> repoConnection;
+	protected LinkedList<ServiceClient<SailInsertionRequest, DefaultSailResponse>> storeConnection;
 
 	public InsertionTransformer(MiddlewareServiceFactory services) {
 		this.services = services;
@@ -60,11 +62,11 @@ public class InsertionTransformer extends Callback<DefaultSailResponse>
 
 			repoConnection.start();
 			
-			storeConnection = new LinkedList<ServiceClient<SailInsertionRequestBase, DefaultSailResponse>>(); 
-			for(int i = 0; i < Configurator.MAX_STORES; i++) {		
+			storeConnection = new LinkedList<ServiceClient<SailInsertionRequest, DefaultSailResponse>>(); 
+			for(int i = 0; i < Configurator.MAX_STORES; i++) {
 				
-				ServiceClient<SailInsertionRequestBase,DefaultSailResponse> store = ZeromqFactory.getInstance().createServiceClient(
-						Configurator.CHANNEL_SAIL + Integer.toString(i), SailInsertionRequestBase.class,
+				ServiceClient<SailInsertionRequest,DefaultSailResponse> store = ZeromqFactory.getInstance().createServiceClient(
+						Configurator.CHANNEL_SAIL + Integer.toString(i), SailInsertionRequest.class,
 						DefaultSailResponse.class);
 				
 				storeConnection.add(store);
@@ -76,9 +78,6 @@ public class InsertionTransformer extends Callback<DefaultSailResponse>
 			throw new TransformerException(e);
 		}
 
-		
-		
-		
 		log.debug(id + " started");
 	}
 
@@ -124,13 +123,13 @@ public class InsertionTransformer extends Callback<DefaultSailResponse>
 	 * (non-Javadoc)
 	 * @see de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler#handleRequest(de.unikoblenz.west.lkastler.distributedsail.middleware.services.Request)
 	 */
-	public DefaultResponse handleRequest(SimpleInsertionRequest request)
+	public DefaultRepositoryResponse handleRequest(RepositoryInsertionRequest request)
 			throws Throwable {
 		log.debug(id + " got request: " + request);
 
-		storeConnection.get(rand.nextInt(storeConnection.size())).execute(SailInsertionRequestBase.makeSailInsertionRequest(request), this);
+		storeConnection.get(rand.nextInt(storeConnection.size())).execute(SailInsertionRequest.makeSailInsertionRequest(request), this);
 				
-		return new DefaultResponse();
+		return new DefaultRepositoryResponse();
 	}
 
 }

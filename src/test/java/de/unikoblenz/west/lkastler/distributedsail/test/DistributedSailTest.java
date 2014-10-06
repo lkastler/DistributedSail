@@ -9,8 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unikoblenz.west.lkastler.distributedsail.DistributedSailConnector;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailRequest;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailResponse;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailRequest;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq.ZeromqFactory;
 

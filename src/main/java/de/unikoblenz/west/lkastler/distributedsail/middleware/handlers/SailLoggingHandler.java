@@ -1,7 +1,7 @@
 package de.unikoblenz.west.lkastler.distributedsail.middleware.handlers;
 
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailRequest;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailResponse;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailRequest;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailResponse;
 
 /**
  * simple logger on sail side

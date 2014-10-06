@@ -1,4 +1,4 @@
-package de.unikoblenz.west.lkastler.distributedsail.middleware.commands;
+package de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository;
 
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
@@ -9,7 +9,7 @@ import org.openrdf.model.Value;
  * 
  * @author lkastler
  */
-public class SimpleInsertionRequest extends InsertionRequest implements SailRequest {
+public class RepositoryInsertionRequest extends InsertionRequest {
 
 	/** */
 	private static final long serialVersionUID = 1L;
@@ -24,7 +24,7 @@ public class SimpleInsertionRequest extends InsertionRequest implements SailRequ
 	 * @param predicate - predicate of RDF triple to insert.
 	 * @param object - object of RDF triple to insert.
 	 */
-	public SimpleInsertionRequest(Resource subject, URI predicate, Value object) {
+	public RepositoryInsertionRequest(Resource subject, URI predicate, Value object) {
 		super();
 		this.subject = subject;
 		this.predicate = predicate;

@@ -13,10 +13,11 @@ abstract public class Configurator {
 	protected static final Logger log = LoggerFactory.getLogger(Configurator.class);
 	
 	public static final String CHANNEL_INSERTION = "inproc://insert";
+	public static final String CHANNEL_RETRIEVAL = "inproc://retrieve";
 	public static final String CHANNEL_SAIL = "inproc://sail";
 	public static final String CHANNEL_NOTIFICATION = "ipc://notify";
 	
-	public static final int MAX_STORES = 2;
+	public static final int MAX_STORES = 10;
 	
 	
 }

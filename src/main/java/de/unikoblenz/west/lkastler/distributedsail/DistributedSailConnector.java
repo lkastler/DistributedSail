@@ -13,8 +13,8 @@ import org.openrdf.sail.SailException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.DefaultSailResponse;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SailInsertionRequestBase;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.DefaultSailResponse;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailInsertionRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.MiddlewareNotificationFactory;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceException;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceFactory;
@@ -27,7 +27,7 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServicePr
  * @author lkastler
  */
 public class DistributedSailConnector implements
-		ServiceHandler<SailInsertionRequestBase, DefaultSailResponse> {
+		ServiceHandler<SailInsertionRequest, DefaultSailResponse> {
 
 	private static final Logger log = LoggerFactory
 			.getLogger(DistributedSailConnector.class);
@@ -36,7 +36,7 @@ public class DistributedSailConnector implements
 	protected SailConnection sailConnect;
 	protected String id;
 
-	protected ServiceProvider<SailInsertionRequestBase, DefaultSailResponse> provider;
+	protected ServiceProvider<SailInsertionRequest, DefaultSailResponse> provider;
 
 	// TODO implement notification system.
 
@@ -110,7 +110,7 @@ public class DistributedSailConnector implements
 		log.debug("stopped");
 	}
 
-	public DefaultSailResponse handleRequest(SailInsertionRequestBase request)
+	public DefaultSailResponse handleRequest(SailInsertionRequest request)
 			throws Throwable {
 		log.debug("[" + id + "] handle request: " + request);
 
@@ -125,7 +125,7 @@ public class DistributedSailConnector implements
 		return new DefaultSailResponse();
 	}
 	
-	public List<String> test() throws SailException {
+	public List<String> getStoredTriples() throws SailException {
 		LinkedList<String> result = new LinkedList<String>();
 		
 		log.debug("getting info from store");

@@ -1,11 +1,11 @@
-package de.unikoblenz.west.lkastler.distributedsail.middleware.commands;
+package de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository;
 
 /**
  * simple response that does nothing.
  * 
  * @author lkastler
  */
-public class DefaultResponse implements InsertionResponse, RetrievalResponse {
+public class DefaultRepositoryResponse implements InsertionResponse, RetrievalResponse {
 
 	/** */
 	private static final long serialVersionUID = 1L;

@@ -24,8 +24,8 @@ import org.openrdf.rio.RDFHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.InsertionResponse;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.SimpleInsertionRequest;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository.InsertionResponse;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository.RepositoryInsertionRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceClient;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceException;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceFactory;
@@ -39,7 +39,7 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 
 	final Logger log = LoggerFactory.getLogger(DistributedRepositoryConnection.class);
 	
-	protected final ServiceClient<SimpleInsertionRequest, InsertionResponse> insertion;
+	protected final ServiceClient<RepositoryInsertionRequest, InsertionResponse> insertion;
 	//protected final MiddlewareServiceClient<RetrievalRequest, RetrievalResponse> retrieval;
 	
 	private boolean transactionActive = false;
@@ -47,7 +47,7 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 	public DistributedRepositoryConnection(Repository repository, MiddlewareServiceFactory factory) throws RepositoryException {
 		super(repository);
 		try {
-			insertion = factory.createServiceClient(Configurator.CHANNEL_INSERTION, SimpleInsertionRequest.class, InsertionResponse.class);
+			insertion = factory.createServiceClient(Configurator.CHANNEL_INSERTION, RepositoryInsertionRequest.class, InsertionResponse.class);
 			//retrieval = factory.getMiddlewareServiceClient(RetrievalRequest.class, RetrievalResponse.class);
 			
 			insertion.start();
@@ -191,7 +191,7 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 
 		log.debug("add: " + subject + " " + predicate + " " + object);
 		
-		SimpleInsertionRequest req = new SimpleInsertionRequest(subject, predicate, object);
+		RepositoryInsertionRequest req = new RepositoryInsertionRequest(subject, predicate, object);
 		
 		synchronized(insertion) {
 			insertion.execute(req, new Callback<InsertionResponse>(){

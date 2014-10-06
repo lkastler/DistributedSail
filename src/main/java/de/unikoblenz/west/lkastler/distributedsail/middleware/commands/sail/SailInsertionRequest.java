@@ -1,14 +1,16 @@
-package de.unikoblenz.west.lkastler.distributedsail.middleware.commands;
+package de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail;
 
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository.RepositoryInsertionRequest;
+
 /**
  * implementation of the SailInsertionRequest interface.
  * @author lkastler
  */
-public class SailInsertionRequestBase implements SailInsertionRequest {
+public class SailInsertionRequest implements SailRequest {
 
 	private static final long serialVersionUID = 1L;
 
@@ -17,8 +19,8 @@ public class SailInsertionRequestBase implements SailInsertionRequest {
 	private Value object;
 	
 	
-	public static SailInsertionRequestBase makeSailInsertionRequest(SimpleInsertionRequest req) {
-		return new SailInsertionRequestBase(req.getSubject(), req.getPredicate(),req.getObject());
+	public static SailInsertionRequest makeSailInsertionRequest(RepositoryInsertionRequest req) {
+		return new SailInsertionRequest(req.getSubject(), req.getPredicate(),req.getObject());
 	}
 	
 	/**
@@ -26,7 +28,7 @@ public class SailInsertionRequestBase implements SailInsertionRequest {
 	 * @param predicate
 	 * @param object
 	 */
-	public SailInsertionRequestBase(Resource subject, URI predicate,
+	public SailInsertionRequest(Resource subject, URI predicate,
 			Value object) {
 		super();
 		this.subject = subject;
