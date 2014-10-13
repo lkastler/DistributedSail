@@ -18,7 +18,7 @@ abstract public class Configurator {
 	public static final String CHANNEL_SAIL_RETRIEVAL = "inproc://sail-retrieve";
 	public static final String CHANNEL_NOTIFICATION = "ipc://notify";
 	
-	public static final int MAX_STORES = 1;
+	public static final int MAX_STORES = 2;
 	
 	
 }

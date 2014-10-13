@@ -174,17 +174,17 @@ public class DistributionTest {
 		// retrieve data
 		RepositoryResult<Statement> result = con.getStatements(fac.createURI("http://example.com/","S_1"), null, null, false, new Resource[0]);
 		
-		
-		
 		log.info("RETRIEVED: " + Iterations.asList(result));
-				
+			
+		result = con.getStatements(null, null, null, false, new Resource[0]);
+		log.info("RETRIEVED: " + Iterations.asList(result));
+		
 		// shut it down
 		for (DistributedSailConnector dsc : sails) {
 			
 			log.debug("print stored infos");
 			
 			log.debug(Integer.toString(dsc.getStoredTriples().size()));
-			
 			
 			dsc.stop();
 		}
