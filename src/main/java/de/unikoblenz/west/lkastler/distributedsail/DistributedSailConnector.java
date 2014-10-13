@@ -45,24 +45,6 @@ public class DistributedSailConnector {
 	
 	// TODO implement notification system.
 
-	/**
-	 * creates a DistributedSailConnector that connects given Sail
-	 * implementation to the middleware by given MiddlewareServiceProvider.
-	 * 
-	 * @param sail
-	 *            - implementation of the SAIL API to connect to the middleware.
-	 * @param insertion
-	 *            - provides the connection to the middleware.
-	 * @throws SailException
-	 *             - thrown if needed services could not be created
-	 */
-	public DistributedSailConnector(Sail sail,
-			MiddlewareServiceFactory services,
-			MiddlewareNotificationFactory notifications) {
-		
-		this("", sail, services, notifications);
-	}
-
 	public DistributedSailConnector(String id, Sail sail,
 			MiddlewareServiceFactory services,
 			MiddlewareNotificationFactory notifications) {
@@ -91,16 +73,17 @@ public class DistributedSailConnector {
 		sailConnect = sail.getConnection();
 		
 		try {
-			insertion = services.createServiceProvider(Configurator.CHANNEL_SAIL
+			insertion = services.createServiceProvider(Configurator.CHANNEL_SAIL_INSERTION
 					+ id, new SailInsertionHandler(sailConnect));
 			
-			retrieval = services.createServiceProvider(Configurator.CHANNEL_SAIL
-					+ id, new SailRetrievalHandler(sailConnect));
+			retrieval = services.createServiceProvider(Configurator.CHANNEL_SAIL_RETRIEVAL
+					+ id, new SailRetrievalHandler(id, sailConnect));
 		} catch (MiddlewareServiceException e) {
 			throw new SailException(e);
 		}
 
 		insertion.start();
+		retrieval.start();
 
 		log.debug("started");
 	}
@@ -116,6 +99,7 @@ public class DistributedSailConnector {
 		log.debug("stopping");
 
 		insertion.stop();
+		retrieval.stop();
 		sailConnect.close();
 		sail.shutDown();
 

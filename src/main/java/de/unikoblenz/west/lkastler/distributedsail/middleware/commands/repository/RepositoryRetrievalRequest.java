@@ -1,5 +1,7 @@
 package de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository;
 
+import java.util.Random;
+
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
@@ -13,10 +15,16 @@ public class RepositoryRetrievalRequest extends RetrievalRequest {
 	private URI predicate;
 	private Value object;
 	
-	public RepositoryRetrievalRequest(Resource subj, URI pred, Value obj) {
+	public RepositoryRetrievalRequest(long id, Resource subj, URI pred, Value obj) {
+		super(id);
+		
 		this.subject = subj;
 		this.predicate = pred;
 		this.object = obj;
+	}
+	
+	public RepositoryRetrievalRequest(Resource subj, URI pred, Value obj) {
+		this(new Random(System.currentTimeMillis()).nextLong(), subj, pred, obj);
 	}
 
 	/**
@@ -38,6 +46,15 @@ public class RepositoryRetrievalRequest extends RetrievalRequest {
 	 */
 	public Value getObject() {
 		return object;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "RepositoryRetrievalRequest [subject=" + subject
+				+ ", predicate=" + predicate + ", object=" + object + "]";
 	}
 
 }

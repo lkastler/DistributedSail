@@ -66,12 +66,12 @@ public class InsertionTransformer extends Callback<SailInsertionResponse>
 			for(int i = 0; i < Configurator.MAX_STORES; i++) {
 				
 				ServiceClient<SailInsertionRequest,SailInsertionResponse> store = ZeromqFactory.getInstance().createServiceClient(
-						Configurator.CHANNEL_SAIL + Integer.toString(i), SailInsertionRequest.class,
+						Configurator.CHANNEL_SAIL_INSERTION + Integer.toString(i), SailInsertionRequest.class,
 						SailInsertionResponse.class);
 				
-				storeConnection.add(store);
-				
 				store.start();
+				
+				storeConnection.add(store);
 			}
 		} catch (MiddlewareServiceException e) {
 			e.printStackTrace();

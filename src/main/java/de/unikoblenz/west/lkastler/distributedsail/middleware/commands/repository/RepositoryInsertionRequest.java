@@ -1,5 +1,7 @@
 package de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository;
 
+import java.util.Random;
+
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
@@ -14,6 +16,8 @@ public class RepositoryInsertionRequest extends InsertionRequest {
 	/** */
 	private static final long serialVersionUID = 1L;
 
+	private static final Random rand = new Random(System.currentTimeMillis());
+	
 	private Resource subject;
 	private URI predicate;
 	private Value object;
@@ -25,7 +29,7 @@ public class RepositoryInsertionRequest extends InsertionRequest {
 	 * @param object - object of RDF triple to insert.
 	 */
 	public RepositoryInsertionRequest(Resource subject, URI predicate, Value object) {
-		super();
+		super(rand.nextLong());
 		this.subject = subject;
 		this.predicate = predicate;
 		this.object = object;
@@ -61,6 +65,6 @@ public class RepositoryInsertionRequest extends InsertionRequest {
 	 */
 	@Override
 	public String toString() {
-		return "SimpleInsertionRequest [" + subject + " " + predicate + " " + object + "]";
+		return "SimpleInsertionRequest [id=" + getId() + ";" + subject + " " + predicate + " " + object + "]";
 	}	
 }

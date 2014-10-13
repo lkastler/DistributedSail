@@ -47,7 +47,7 @@ public class DistributedSailTest {
 	@Test
 	public void connectDistributedSail() throws Throwable {
 		log.info("starting connection test");
-		DistributedSailConnector dsail = new DistributedSailConnector(new MemoryStore(), ZeromqFactory.getInstance(),ZeromqFactory.getInstance());
+		DistributedSailConnector dsail = new DistributedSailConnector("1", new MemoryStore(), ZeromqFactory.getInstance(),ZeromqFactory.getInstance());
 		
 		dsail.start();
 				

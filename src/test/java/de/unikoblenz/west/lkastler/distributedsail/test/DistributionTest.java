@@ -1,5 +1,7 @@
 package de.unikoblenz.west.lkastler.distributedsail.test;
 
+import info.aduna.iteration.Iterations;
+
 import java.util.LinkedList;
 
 import org.apache.log4j.BasicConfigurator;
@@ -57,6 +59,7 @@ public class DistributionTest {
 	 * 
 	 * @throws Throwable
 	 */
+	@Ignore
 	@Test
 	public void testFullWithMultipleStores() throws Throwable {
 		log.info("testing distributed setting");
@@ -119,7 +122,6 @@ public class DistributionTest {
 	 * 
 	 * @throws Throwable
 	 */
-	@Ignore
 	@Test
 	public void testRetrievalWithMultipleStores() throws Throwable {
 		log.info("testing retrieval setting");
@@ -134,7 +136,7 @@ public class DistributionTest {
 
 			dsc.start();
 		}
-
+		
 		// create InsertionTransformer
 		Transformer t = setUpInsertionTransformer();
 		t.start();
@@ -148,13 +150,17 @@ public class DistributionTest {
 		// ... and start it
 		repo.initialize();
 
+		log.info("ADD DATA");
+		
 		// get DRConnection
 		DistributedRepositoryConnection con = (DistributedRepositoryConnection) repo
 				.getConnection();
-
+		
 		// add data
 		ValueFactory fac = repo.getValueFactory();
 
+		
+		
 		for (int i = 0; i < 10; i++) {
 			URI subject = fac.createURI("http://example.com/", "S_" + Integer.toString(i));
 			URI predicate = fac.createURI("http://example.com/", "P_" + Integer.toString(i));
@@ -163,12 +169,15 @@ public class DistributionTest {
 			con.add(subject, predicate, object);
 		}
 
+		log.info("RETRIEVE");
+		
 		// retrieve data
 		RepositoryResult<Statement> result = con.getStatements(fac.createURI("http://example.com/","S_1"), null, null, false, new Resource[0]);
 		
-		log.debug(result.toString());
 		
 		
+		log.info("RETRIEVED: " + Iterations.asList(result));
+				
 		// shut it down
 		for (DistributedSailConnector dsc : sails) {
 			

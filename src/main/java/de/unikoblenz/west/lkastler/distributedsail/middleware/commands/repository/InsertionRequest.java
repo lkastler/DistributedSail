@@ -11,4 +11,14 @@ public class InsertionRequest implements Request {
 	/** */
 	private static final long serialVersionUID = 1L;
 
+	private final long id;
+	
+	public InsertionRequest(long id) {
+		this.id = id;
+	}
+	
+	public long getId() {
+		return id;
+	}
+
 }

@@ -13,8 +13,7 @@ import org.slf4j.LoggerFactory;
 import de.unikoblenz.west.lkastler.distributedsail.Configurator;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.IntermediateResult;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository.RepositoryRetrievalResponse;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository.RetrievalRequest;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailResponse;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository.RepositoryRetrievalRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailRetrievalRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailRetrievalResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceException;
@@ -31,30 +30,35 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.Transfor
  * 
  * @author lkastler
  */
-public class RetrievalTransformer extends Callback<SailResponse> implements
+public class RetrievalTransformer extends Callback<SailRetrievalResponse> implements
 		Transformer,
-		ServiceHandler<RetrievalRequest, RepositoryRetrievalResponse> {
+		ServiceHandler<RepositoryRetrievalRequest, RepositoryRetrievalResponse> {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	private final MiddlewareServiceFactory factory;
 
-	private ServiceProvider<RetrievalRequest, RepositoryRetrievalResponse> repoConnection;
-	private LinkedList<ServiceClient<SailRetrievalRequest, SailResponse>> storeConnections;
+	private ServiceProvider<RepositoryRetrievalRequest, RepositoryRetrievalResponse> repoConnection;
+	private LinkedList<ServiceClient<SailRetrievalRequest, SailRetrievalResponse>> storeConnections;
 
-	private HashMap<SailRetrievalRequest, IntermediateResult<Statement, SailException>> collectors = new HashMap<SailRetrievalRequest, IntermediateResult<Statement, SailException>>();
-	private int count = 0;
-
+	// TODO do i have to set this volatile?
+	private HashMap<Long, IntermediateResult<Statement, SailException>> collectors = new HashMap<Long, IntermediateResult<Statement, SailException>>();
+	
+	private int pendingResponses = 0;
+	
 	/**
 	 * TODO add doc
 	 * 
 	 * @param factory
 	 */
 	public RetrievalTransformer(MiddlewareServiceFactory factory) {
-		super();
 		this.factory = factory;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see de.unikoblenz.west.lkastler.distributedsail.middleware.transform.Transformer#start()
+	 */
 	public void start() throws TransformerException {
 		try {
 			repoConnection = factory.createServiceProvider(
@@ -62,75 +66,96 @@ public class RetrievalTransformer extends Callback<SailResponse> implements
 
 			repoConnection.start();
 
-			storeConnections = new LinkedList<ServiceClient<SailRetrievalRequest, SailResponse>>();
+			storeConnections = new LinkedList<ServiceClient<SailRetrievalRequest, SailRetrievalResponse>>();
 
 			for (int i = 0; i < Configurator.MAX_STORES; i++) {
-				ServiceClient<SailRetrievalRequest, SailResponse> store = factory
-						.createServiceClient(Configurator.CHANNEL_RETRIEVAL
-								+ Integer.toString(i),
-								SailRetrievalRequest.class, SailResponse.class);
+				ServiceClient<SailRetrievalRequest, SailRetrievalResponse> store = factory
+						.createServiceClient(Configurator.CHANNEL_SAIL_RETRIEVAL + Integer.toString(i),
+								SailRetrievalRequest.class, SailRetrievalResponse.class);
 				storeConnections.add(store);
 				store.start();
 			}
-
+			
+			log.debug("created");
 		} catch (MiddlewareServiceException e) {
 			log.error("coult not create service provider: ", e);
 			throw new TransformerException(e);
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see de.unikoblenz.west.lkastler.distributedsail.middleware.transform.Transformer#stop()
+	 */
 	public void stop() throws TransformerException {
 		repoConnection.stop();
 
 		for (ServiceClient<?, ?> store : storeConnections) {
 			store.stop();
 		}
+		
+		log.debug("stopped");
 	}
 
-	public RepositoryRetrievalResponse handleRequest(RetrievalRequest request)
+	/*
+	 * (non-Javadoc)
+	 * @see de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler#handleRequest(de.unikoblenz.west.lkastler.distributedsail.middleware.services.Request)
+	 */
+	public RepositoryRetrievalResponse handleRequest(RepositoryRetrievalRequest request)
 			throws Throwable {
 		log.debug("received retrieval request: " + request.toString());
 
 		SailRetrievalRequest req = SailRetrievalRequest.create(request);
 		
-		count = storeConnections.size();
+		pendingResponses = storeConnections.size();
 		
-		for (ServiceClient<SailRetrievalRequest, SailResponse> store : storeConnections) {
+		for (ServiceClient<SailRetrievalRequest, SailRetrievalResponse> store : storeConnections) {
+			log.debug("sending message to store");
+			
+					
 			store.execute(req, this);
 		}
 
-		while(count > 0) {
+		while(pendingResponses > 0) {
 			// FIXME no busy waiting!
 		}
 		
 		log.debug("done");
 		
-		IntermediateResult<Statement, SailException> result = collectors.get(req);
+		IntermediateResult<Statement, SailException> result = collectors.get(req.getId());
 
-		collectors.remove(req);
+		log.debug("collective answer: " + result);
 		
-		return new RepositoryRetrievalResponse(result);
+		collectors.remove(req.getId());
+		
+		return new RepositoryRetrievalResponse(request, result);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see net.hh.request_dispatcher.Callback#onSuccess(java.io.Serializable)
+	 */
 	@Override
-	public void onSuccess(SailResponse reply) {
+	public void onSuccess(SailRetrievalResponse reply) {
 		
 		log.debug("answer received: " + reply.toString());
 		
 		if(reply instanceof SailRetrievalResponse) {
 			SailRetrievalRequest req = (SailRetrievalRequest) reply.getRequest();
-			SailRetrievalResponse resp = (SailRetrievalResponse)reply;
 			
-			if(collectors.get(req) == null) {
-				collectors.put(req, new IntermediateResult<Statement, SailException>(new SailException("something something dark side")));
-			}
 			try {
-				collectors.get(req).addAll(resp.getResult());
-		
+				log.debug("before: " + collectors.get(req.getId()));
+				
+				collectors.put(req.getId(), IntermediateResult.merge(collectors.get(req.getId()) == null ? new IntermediateResult<Statement, SailException>() : collectors.get(req.getId()), reply.getResult()));
+				
+				log.debug("after: " + collectors.get(req.getId()));
+				
+				pendingResponses--;
 			} catch (SailException e) {
-				log.error("well i dont know", e);
+				log.error("ERROR", e);
 			}
-			count--;
+			
+			log.debug("done");
 		}
 	}
 

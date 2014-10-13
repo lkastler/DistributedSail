@@ -5,11 +5,11 @@ package de.unikoblenz.west.lkastler.distributedsail.middleware.commands.reposito
  * 
  * @author lkastler
  */
-public class RepositoryInsertionResponse implements InsertionResponse, RetrievalResponse {
+public class RepositoryInsertionResponse implements InsertionResponse {
 
 	/** */
 	private static final long serialVersionUID = 1L;
-
+	
 	/*
 	 * (non-Javadoc)
 	 * @see java.lang.Object#toString()
@@ -18,6 +18,5 @@ public class RepositoryInsertionResponse implements InsertionResponse, Retrieval
 	public String toString() {
 		return "default response";
 	}
-
 	
 }

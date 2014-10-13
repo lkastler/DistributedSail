@@ -14,10 +14,11 @@ abstract public class Configurator {
 	
 	public static final String CHANNEL_INSERTION = "inproc://insert";
 	public static final String CHANNEL_RETRIEVAL = "inproc://retrieve";
-	public static final String CHANNEL_SAIL = "inproc://sail";
+	public static final String CHANNEL_SAIL_INSERTION = "inproc://sail-insert";
+	public static final String CHANNEL_SAIL_RETRIEVAL = "inproc://sail-retrieve";
 	public static final String CHANNEL_NOTIFICATION = "ipc://notify";
 	
-	public static final int MAX_STORES = 10;
+	public static final int MAX_STORES = 1;
 	
 	
 }

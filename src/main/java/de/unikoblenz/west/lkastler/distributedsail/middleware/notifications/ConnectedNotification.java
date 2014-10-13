@@ -9,7 +9,7 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.Noti
  */
 public class ConnectedNotification implements Notification {
 
-	private final String id;
+	private final long id;
 	
 	private static final long serialVersionUID = 1L;
 
@@ -17,7 +17,7 @@ public class ConnectedNotification implements Notification {
 	 * constructs a notification that NotificationSender, identified by id, has connected to the middleware.
 	 * @param id - id of newly connected NotificationSender.
 	 */
-	public ConnectedNotification(String id) {
+	public ConnectedNotification(long id) {
 		this.id = id;
 	}
 
@@ -25,7 +25,7 @@ public class ConnectedNotification implements Notification {
 	 * returns the id of the sender.
 	 * @return the id of the sender.
 	 */
-	public String getId() {
+	public long getId() {
 		return id;
 	}
 }

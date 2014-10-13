@@ -1,5 +1,7 @@
 package de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail;
 
+import java.util.Random;
+
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
@@ -14,6 +16,10 @@ public class SailInsertionRequest implements SailRequest {
 
 	private static final long serialVersionUID = 1L;
 
+	private static Random rand = new Random(System.currentTimeMillis());
+	
+	private final long id;
+	
 	private Resource subject;
 	private URI predicate;
 	private Value object;
@@ -30,7 +36,9 @@ public class SailInsertionRequest implements SailRequest {
 	 */
 	public SailInsertionRequest(Resource subject, URI predicate,
 			Value object) {
-		super();
+		
+		id = rand.nextLong();
+		
 		this.subject = subject;
 		this.predicate = predicate;
 		this.object = object;
@@ -64,5 +72,9 @@ public class SailInsertionRequest implements SailRequest {
 	public String toString() {
 		return "SailInsertionRequestBase [subject=" + subject + ", predicate="
 				+ predicate + ", object=" + object + "]";
+	}
+
+	public long getId() {
+		return id;
 	}
 }

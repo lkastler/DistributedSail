@@ -20,12 +20,16 @@ public class SailRetrievalHandler implements
 	
 	private final SailConnection connection;
 		
+	private final String id;
 	/**
 	 * @param connection
 	 */
-	public SailRetrievalHandler(SailConnection connection) {
+	public SailRetrievalHandler(String id, SailConnection connection) {
 		super();
+		this.id = id;
 		this.connection = connection;
+		
+		log.debug("created");
 	}
 
 	public SailRetrievalResponse handleRequest(SailRetrievalRequest request)
@@ -44,7 +48,7 @@ public class SailRetrievalHandler implements
 		
 		connection.commit();
 		
-		return new SailRetrievalResponse(request, result);
+		return new SailRetrievalResponse(id, request, result);
 	}
 
 }

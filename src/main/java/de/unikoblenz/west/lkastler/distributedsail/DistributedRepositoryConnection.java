@@ -24,9 +24,11 @@ import org.openrdf.rio.RDFHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unikoblenz.west.lkastler.distributedsail.middleware.IntermediateResult;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository.InsertionResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository.RepositoryInsertionRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository.RepositoryRetrievalRequest;
+import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository.RepositoryRetrievalResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository.RetrievalResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceClient;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceException;
@@ -44,7 +46,7 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 	protected final ServiceClient<RepositoryInsertionRequest, InsertionResponse> insertion;
 	protected final ServiceClient<RepositoryRetrievalRequest, RetrievalResponse> retrieval;
 	
-	private RepositoryResult<Statement> result;
+	private IntermediateResult<Statement,RepositoryException> result;
 	
 	private boolean transactionActive = false;
 	
@@ -70,7 +72,7 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 			Value obj, boolean includeInferred, Resource... contexts)
 			throws RepositoryException {
 		
-		log.debug("retieve: " + subj + " " + pred + " " + obj);
+		log.debug("retrieve: " + subj + " " + pred + " " + obj);
 		
 		RepositoryRetrievalRequest req = new RepositoryRetrievalRequest(subj, pred, obj);
 		
@@ -79,22 +81,35 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 					
 			retrieval.execute(req, new Callback<RetrievalResponse>() {
 
+				@SuppressWarnings("unchecked")
 				@Override
 				public void onSuccess(RetrievalResponse reply) {
 					log.info("SUCCESS!");
 					log.info(reply.toString());
+					
+					if(reply instanceof RepositoryRetrievalResponse) {
+						RepositoryRetrievalResponse rrr = (RepositoryRetrievalResponse) reply;
+						
+						try {					
+							result = (IntermediateResult<Statement, RepositoryException>) IntermediateResult.create(rrr.getResult());
+						} catch (Exception e) {
+							log.error("exception!", e);
+						}
+					}
 				}
 			});
 			while(result == null) {
 				//FIXME NOT GOOD
 			}
 			
-			return result;			
+			log.debug("received result: " + result);
+			
+			return new RepositoryResult<Statement>(result);
 			
 		}	
 	}
 
-	// FIXME does something differend than specification
+	// FIXME does something differed than specification
 	public boolean isActive() throws UnknownTransactionStateException,
 			RepositoryException {
 		return transactionActive;
@@ -256,5 +271,13 @@ public class DistributedRepositoryConnection extends RepositoryConnectionBase {
 	public long size(Resource... contexts) throws RepositoryException {
 		// TODO implement RepositoryConnection.size
 		throw new UnsupportedOperationException("implement RepositoryConnection.size !");
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "DistributedRepositoryConnection [result=" + result + "]";
 	}
 }

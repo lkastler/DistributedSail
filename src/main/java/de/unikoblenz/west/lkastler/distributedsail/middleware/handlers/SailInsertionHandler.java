@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailInsertionResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailInsertionRequest;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
 
 public class SailInsertionHandler implements
@@ -24,6 +23,8 @@ public class SailInsertionHandler implements
 	public SailInsertionHandler(SailConnection connection) {
 		super();
 		this.sailConnect = connection;
+		
+		log.debug("created");
 	}
 
 
