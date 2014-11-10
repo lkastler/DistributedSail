@@ -4,11 +4,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import org.openrdf.model.Resource;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
-import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParseException;
-import org.openrdf.rio.RDFParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,19 +20,15 @@ import de.unikoblenz.west.rdf.distributedsail.DistributedRepository;
  * @author lkastler
  */
 public class FileReaderRepository implements Runnable {
-
-	public static final String BASE_URI = "http://example.org";
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
 	private final DistributedRepository repo;
-	private final RDFParser parser;
 	private String fileName = null;
 	
 	private Thread t = null;
 	
-	public FileReaderRepository(RDFParser parser, DistributedRepository repo) {
-		this.parser = parser;
+	public FileReaderRepository(DistributedRepository repo) {
 		this.repo = repo;
 	}
 
@@ -61,22 +57,17 @@ public class FileReaderRepository implements Runnable {
 		// TODO use an RDF reader here maybe
 		try {
 			RepositoryConnection con = repo.getConnection();
-			parser.setValueFactory(con.getValueFactory());
+			con.add(new FileReader(fileName), null, RDFFormat.TURTLE, new Resource[0]);
 			
-			parser.parse(new FileReader(fileName), BASE_URI);
-			
-		} 
-		catch (FileNotFoundException e) {
-			log.error("could not open file: " + fileName, e);
-		} catch (IOException e) {
-			log.error("could not read file properly: " + fileName, e);
 		} catch (RepositoryException e) {
-			log.error("could not open repo connection", e);
+			log.error("could not access repository", e);
 		} catch (RDFParseException e) {
 			log.error("could not parse RDF", e);
-		} catch (RDFHandlerException e) {
-			log.error("could not handle RDF", e);
-		}
+		} catch (FileNotFoundException e) {
+			log.error("could not find file: " + fileName, e);
+		} catch (IOException e) {
+			log.error("could not access file: " + fileName, e);
+		} 
 		finally {
 			t = null;
 		}
