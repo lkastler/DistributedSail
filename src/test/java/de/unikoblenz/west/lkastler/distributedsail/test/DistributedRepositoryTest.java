@@ -6,8 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openrdf.repository.RepositoryException;
 
-import de.unikoblenz.west.lkastler.distributedsail.DistributedRepository;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq.ZeromqFactory;
+import de.unikoblenz.west.rdf.distributedsail.DistributedRepository;
+import de.unikoblenz.west.rdf.distributedsail.middleware.zeromq.ZeromqFactory;
 
 public class DistributedRepositoryTest {
 

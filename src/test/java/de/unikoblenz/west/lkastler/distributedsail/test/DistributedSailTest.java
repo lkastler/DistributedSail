@@ -8,11 +8,11 @@ import org.openrdf.sail.memory.MemoryStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unikoblenz.west.lkastler.distributedsail.DistributedSailConnector;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailRequest;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailResponse;
+import de.unikoblenz.west.rdf.distributedsail.DistributedSailConnector;
+import de.unikoblenz.west.rdf.distributedsail.middleware.commands.sail.SailRequest;
+import de.unikoblenz.west.rdf.distributedsail.middleware.commands.sail.SailResponse;
 import de.unikoblenz.west.rdf.distributedsail.middleware.services.ServiceHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq.ZeromqFactory;
+import de.unikoblenz.west.rdf.distributedsail.middleware.zeromq.ZeromqFactory;
 
 /**
  * this test suite is dedicated to test things related to the DistributedSail class.
