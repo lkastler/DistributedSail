@@ -1,6 +1,6 @@
 package de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository;
 
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Response;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.Response;
 
 /**
  * a response to a retrieval task.

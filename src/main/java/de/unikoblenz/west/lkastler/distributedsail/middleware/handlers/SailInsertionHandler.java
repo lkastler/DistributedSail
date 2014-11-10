@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailInsertionResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailInsertionRequest;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.ServiceHandler;
 
 public class SailInsertionHandler implements
 		ServiceHandler<SailInsertionRequest, SailInsertionResponse> {

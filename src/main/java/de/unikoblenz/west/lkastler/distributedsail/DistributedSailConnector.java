@@ -19,10 +19,10 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.Sail
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailRetrievalResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.handlers.SailInsertionHandler;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.handlers.SailRetrievalHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.MiddlewareNotificationFactory;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceException;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceFactory;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceProvider;
+import de.unikoblenz.west.rdf.distributedsail.middleware.notifications.MiddlewareNotificationFactory;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.MiddlewareServiceException;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.MiddlewareServiceFactory;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.ServiceProvider;
 
 /**
  * connects a SAIL storage with the middleware

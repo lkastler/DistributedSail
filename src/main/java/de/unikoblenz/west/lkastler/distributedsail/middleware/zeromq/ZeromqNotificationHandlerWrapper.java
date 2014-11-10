@@ -3,8 +3,8 @@ package de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq;
 import java.io.Serializable;
 
 import net.hh.request_dispatcher.RequestHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.Notification;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.NotificationHandler;
+import de.unikoblenz.west.rdf.distributedsail.middleware.notifications.Notification;
+import de.unikoblenz.west.rdf.distributedsail.middleware.notifications.NotificationHandler;
 
 /**
  * TODO add comment

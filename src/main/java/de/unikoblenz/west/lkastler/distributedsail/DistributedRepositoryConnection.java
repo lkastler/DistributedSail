@@ -30,9 +30,9 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repositor
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository.RepositoryRetrievalRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository.RepositoryRetrievalResponse;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository.RetrievalResponse;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceClient;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceException;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceFactory;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.ServiceClient;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.MiddlewareServiceException;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.MiddlewareServiceFactory;
 
 /**
  * Connection for the Repository API with the middleware.

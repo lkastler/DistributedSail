@@ -3,19 +3,19 @@ package de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq;
 import org.zeromq.ZMQ;
 
 import de.unikoblenz.west.lkastler.distributedsail.Configurator;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.MiddlewareNotificationException;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.MiddlewareNotificationFactory;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.Notification;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.NotificationHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.NotificationReceiver;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.NotificationSender;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceFactory;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceClient;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceException;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceProvider;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Request;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Response;
+import de.unikoblenz.west.rdf.distributedsail.middleware.notifications.MiddlewareNotificationException;
+import de.unikoblenz.west.rdf.distributedsail.middleware.notifications.MiddlewareNotificationFactory;
+import de.unikoblenz.west.rdf.distributedsail.middleware.notifications.Notification;
+import de.unikoblenz.west.rdf.distributedsail.middleware.notifications.NotificationHandler;
+import de.unikoblenz.west.rdf.distributedsail.middleware.notifications.NotificationReceiver;
+import de.unikoblenz.west.rdf.distributedsail.middleware.notifications.NotificationSender;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.MiddlewareServiceFactory;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.ServiceHandler;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.ServiceClient;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.MiddlewareServiceException;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.ServiceProvider;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.Request;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.Response;
 
 /**
  * implementation of the MiddlewareServiceFactory interface for ZeroMQ

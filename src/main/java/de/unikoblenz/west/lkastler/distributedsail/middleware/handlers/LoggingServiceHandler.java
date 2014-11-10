@@ -3,9 +3,9 @@ package de.unikoblenz.west.lkastler.distributedsail.middleware.handlers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Request;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Response;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.ServiceHandler;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.Request;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.Response;
 
 /**
  * simple logging handler

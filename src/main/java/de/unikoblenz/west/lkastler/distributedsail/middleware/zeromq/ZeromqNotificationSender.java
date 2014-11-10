@@ -5,8 +5,8 @@ import net.hh.request_dispatcher.Dispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.Notification;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.notifications.NotificationSender;
+import de.unikoblenz.west.rdf.distributedsail.middleware.notifications.Notification;
+import de.unikoblenz.west.rdf.distributedsail.middleware.notifications.NotificationSender;
 
 /**
  * implementation of NotificationSender for ZeroMQ.

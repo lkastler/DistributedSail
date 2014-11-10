@@ -16,13 +16,14 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repositor
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository.RepositoryRetrievalRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailRetrievalRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailRetrievalResponse;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceException;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceFactory;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceClient;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceProvider;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.Transformer;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.TransformerException;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.MiddlewareServiceException;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.MiddlewareServiceFactory;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.ServiceClient;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.ServiceHandler;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.ServiceProvider;
+import de.unikoblenz.west.rdf.distributedsail.middleware.transform.Transformer;
+import de.unikoblenz.west.rdf.distributedsail.middleware.transform.TransformerException;
+import de.unikoblenz.west.rdf.distributedsail.middleware.Status;
 
 /**
  * dispatches a retrieval query and orders the correct DistributedSail storages
@@ -36,6 +37,8 @@ public class RetrievalTransformer extends Callback<SailRetrievalResponse> implem
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
+	private Status status = Status.not_running;
+	
 	private final MiddlewareServiceFactory factory;
 
 	private ServiceProvider<RepositoryRetrievalRequest, RepositoryRetrievalResponse> repoConnection;
@@ -47,9 +50,8 @@ public class RetrievalTransformer extends Callback<SailRetrievalResponse> implem
 	private int pendingResponses = 0;
 	
 	/**
-	 * TODO add doc
-	 * 
-	 * @param factory
+	 * creates a new RetrievalTransformer using the given MiddlewareServiceFactory for connections.
+	 * @param factory - creates connections for this RetrievalTransformer from it.
 	 */
 	public RetrievalTransformer(MiddlewareServiceFactory factory) {
 		this.factory = factory;
@@ -60,6 +62,10 @@ public class RetrievalTransformer extends Callback<SailRetrievalResponse> implem
 	 * @see de.unikoblenz.west.lkastler.distributedsail.middleware.transform.Transformer#start()
 	 */
 	public void start() throws TransformerException {
+		if(status == Status.running) {
+			throw new TransformerException("Transformer already running");
+		}
+		
 		try {
 			repoConnection = factory.createServiceProvider(
 					Configurator.CHANNEL_RETRIEVAL, this);
@@ -76,6 +82,8 @@ public class RetrievalTransformer extends Callback<SailRetrievalResponse> implem
 				store.start();
 			}
 			
+			status = Status.running;
+			
 			log.debug("created");
 		} catch (MiddlewareServiceException e) {
 			log.error("coult not create service provider: ", e);
@@ -88,11 +96,17 @@ public class RetrievalTransformer extends Callback<SailRetrievalResponse> implem
 	 * @see de.unikoblenz.west.lkastler.distributedsail.middleware.transform.Transformer#stop()
 	 */
 	public void stop() throws TransformerException {
+		if(status == Status.not_running) {
+			throw new TransformerException("Transformer is not running");
+		}
+		
 		repoConnection.stop();
 
 		for (ServiceClient<?, ?> store : storeConnections) {
 			store.stop();
 		}
+		
+		status = Status.not_running;
 		
 		log.debug("stopped");
 	}
@@ -107,12 +121,11 @@ public class RetrievalTransformer extends Callback<SailRetrievalResponse> implem
 
 		SailRetrievalRequest req = SailRetrievalRequest.create(request);
 		
+		log.debug("sending message to stores");
+		
 		pendingResponses = storeConnections.size();
 		
 		for (ServiceClient<SailRetrievalRequest, SailRetrievalResponse> store : storeConnections) {
-			log.debug("sending message to store");
-			
-					
 			store.execute(req, this);
 		}
 
@@ -120,7 +133,7 @@ public class RetrievalTransformer extends Callback<SailRetrievalResponse> implem
 			// FIXME no busy waiting!
 		}
 		
-		log.debug("done");
+		log.debug("recieved all messages from stores");
 		
 		IntermediateResult<Statement, SailException> result = collectors.get(req.getId());
 

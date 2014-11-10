@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailRetrievalRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailRetrievalResponse;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.ServiceHandler;
 
 public class SailRetrievalHandler implements
 		ServiceHandler<SailRetrievalRequest, SailRetrievalResponse> {

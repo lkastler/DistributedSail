@@ -1,6 +1,6 @@
 package de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail;
 
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.Request;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.Request;
 
 /**
  * a Request sent to a DistributedSailConnector.

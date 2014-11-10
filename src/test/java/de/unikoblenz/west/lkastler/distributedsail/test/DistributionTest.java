@@ -25,7 +25,7 @@ import de.unikoblenz.west.lkastler.distributedsail.DistributedRepositoryConnecti
 import de.unikoblenz.west.lkastler.distributedsail.DistributedSailConnector;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.InsertionTransformer;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.RetrievalTransformer;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.Transformer;
+import de.unikoblenz.west.rdf.distributedsail.middleware.transform.Transformer;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq.ZeromqFactory;
 
 /**
@@ -55,7 +55,7 @@ public class DistributionTest {
 	}
 
 	/**
-	 * test multiple stores
+	 * test insertion with multiple stores
 	 * 
 	 * @throws Throwable
 	 */
@@ -118,7 +118,7 @@ public class DistributionTest {
 	}
 	
 	/**
-	 * test multiple stores
+	 * test insertion and retrieval in multiple stores.
 	 * 
 	 * @throws Throwable
 	 */
@@ -306,7 +306,11 @@ public class DistributionTest {
 		return dsc;
 	}
 
-	// TODO add doc
+	/**
+	 * creates a DistributedRepository
+	 * @return a DistributedRepository
+	 * @throws Throwable - thrown if something went wrong.
+	 */
 	private DistributedRepository setUpDistributedRepository() throws Throwable {
 		log.info("set up DR");
 

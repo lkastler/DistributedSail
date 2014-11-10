@@ -14,14 +14,15 @@ import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repositor
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.repository.RepositoryInsertionRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailInsertionRequest;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.commands.sail.SailInsertionResponse;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceException;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.MiddlewareServiceFactory;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceClient;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceHandler;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.services.ServiceProvider;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.Transformer;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.TransformerException;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.MiddlewareServiceException;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.MiddlewareServiceFactory;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.ServiceClient;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.ServiceHandler;
+import de.unikoblenz.west.rdf.distributedsail.middleware.services.ServiceProvider;
+import de.unikoblenz.west.rdf.distributedsail.middleware.transform.Transformer;
+import de.unikoblenz.west.rdf.distributedsail.middleware.transform.TransformerException;
 import de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq.ZeromqFactory;
+import de.unikoblenz.west.rdf.distributedsail.middleware.Status;
 
 /**
  * dispatches insertion queries and stores given data to a
@@ -43,6 +44,8 @@ public class InsertionTransformer extends Callback<SailInsertionResponse>
 	protected ServiceProvider<RepositoryInsertionRequest, RepositoryInsertionResponse> repoConnection;
 	protected LinkedList<ServiceClient<SailInsertionRequest, SailInsertionResponse>> storeConnection;
 
+	private Status status = Status.not_running;
+	
 	public InsertionTransformer(MiddlewareServiceFactory services) {
 		this.services = services;
 
@@ -54,6 +57,10 @@ public class InsertionTransformer extends Callback<SailInsertionResponse>
 	 * @see de.unikoblenz.west.lkastler.distributedsail.middleware.transform.Transformer#start()
 	 */
 	public void start() throws TransformerException {
+		if(status == Status.running) {
+			throw new TransformerException("InsertionTransformer already running");
+		}
+		
 		try {
 			repoConnection = services
 					.createServiceProvider(
@@ -71,7 +78,7 @@ public class InsertionTransformer extends Callback<SailInsertionResponse>
 				
 				store.start();
 				
-				storeConnection.add(store);
+				storeConnection.add(store);		
 			}
 		} catch (MiddlewareServiceException e) {
 			e.printStackTrace();
@@ -79,18 +86,25 @@ public class InsertionTransformer extends Callback<SailInsertionResponse>
 		}
 
 		log.debug(id + " started");
+		
+		status = Status.running;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see de.unikoblenz.west.lkastler.distributedsail.middleware.transform.Transformer#stop()
 	 */
-	public void stop() {
+	public void stop() throws TransformerException {
+		if(status != Status.running) {
+			throw new TransformerException("Transformer not running");
+		}
+
 		repoConnection.stop();
 		for(ServiceClient<?,?> store: storeConnection) {
 			store.stop();
 		}
 		
+		status = Status.not_running;
 		log.debug(id + " stopped");
 	}
 
