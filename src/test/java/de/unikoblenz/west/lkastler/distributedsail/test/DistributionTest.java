@@ -19,14 +19,14 @@ import org.openrdf.sail.memory.MemoryStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unikoblenz.west.lkastler.distributedsail.Configurator;
-import de.unikoblenz.west.lkastler.distributedsail.DistributedRepository;
-import de.unikoblenz.west.lkastler.distributedsail.DistributedRepositoryConnection;
-import de.unikoblenz.west.lkastler.distributedsail.DistributedSailConnector;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.InsertionTransformer;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.transform.RetrievalTransformer;
+import de.unikoblenz.west.rdf.distributedsail.Configurator;
+import de.unikoblenz.west.rdf.distributedsail.DistributedRepository;
+import de.unikoblenz.west.rdf.distributedsail.DistributedRepositoryConnection;
+import de.unikoblenz.west.rdf.distributedsail.DistributedSailConnector;
+import de.unikoblenz.west.rdf.distributedsail.middleware.transform.InsertionTransformer;
+import de.unikoblenz.west.rdf.distributedsail.middleware.transform.RetrievalTransformer;
 import de.unikoblenz.west.rdf.distributedsail.middleware.transform.Transformer;
-import de.unikoblenz.west.lkastler.distributedsail.middleware.zeromq.ZeromqFactory;
+import de.unikoblenz.west.rdf.distributedsail.middleware.zeromq.ZeromqFactory;
 
 /**
  * testing simple distribution of
